@@ -238,6 +238,11 @@
         function limparDados() { if(confirm("Apagar?")) { localStorage.clear(); location.reload(); } }
 
         render();
+        if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log("MotoPanel Offline: Ativado!"))
+      .catch((err) => console.log("Erro no PWA:", err));
+  }
     </script>
 </body>
 </html>
