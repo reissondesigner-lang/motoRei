@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root { --neon-green: #00ff41; --dark-bg: #050505; --text-gray: #555; --warning-red: #dc2626; }
+        :root { --neon-green: #00ff41; --dark-bg: #050505; --text-gray: #555; --warning-red: #dc2626; --warning-yellow: #eab308; }
 
         body { 
             background: var(--dark-bg); color: var(--neon-green); font-family: 'Orbitron', sans-serif; 
@@ -17,7 +17,6 @@
 
         .label-futuristic { font-size: 8px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; }
 
-        /* Painel LCD */
         .lcd-panel { 
             background: linear-gradient(145deg, #0f0f0f, #050505); border: 1px solid #1a1a1a; 
             padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: inset 0 0 20px #000;
@@ -29,7 +28,6 @@
             background-size: 100% 4px; pointer-events: none; z-index: 10;
         }
 
-        /* Odômetro */
         .odo-container { display: flex; align-items: baseline; gap: 2px; }
         .val-main { color: #fff; font-size: 1.8rem; font-weight: 700; }
         .val-meters { color: #000; background: #fff; padding: 0 4px; border-radius: 2px; font-size: 1.5rem; font-weight: 700; margin-left: 4px; }
@@ -39,7 +37,6 @@
         .fuel-bar-container { width: 100%; background: #000; height: 12px; border-radius: 2px; border: 1px solid #1a1a1a; margin: 10px 0; overflow: hidden; padding: 2px; }
         .fuel-bar { height: 100%; border-radius: 1px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* Grid Unificado para Inputs e Botões */
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
         
         input { 
@@ -63,8 +60,14 @@
         .history-info { font-family: sans-serif; font-size: 11px; color: #eee; }
         .history-meta { font-size: 8px; color: var(--text-gray); text-transform: uppercase; }
 
+        /* Estilos dos Alertas */
+        #oilAlert { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 4px; border: 1px solid transparent; }
+        .alert-red { background: #450a0a; color: #f87171; border-color: #7f1d1d !important; }
+        .alert-yellow { background: #422006; color: #fbbf24; border-color: #78350f !important; }
+        .alert-fuel { font-size: 10px; color: var(--warning-red); font-weight: 700; text-transform: uppercase; }
+
         .blink { animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0.2; } }
+        @keyframes blinker { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
@@ -86,22 +89,27 @@
         </div>
 
         <div class="fuel-bar-container">
-            <div id="fuelBar" class="fuel-bar" style="width: 0%; background: var(--neon-green);"></div>
+            <div id="fuelBar" class="fuel-bar" style="width: 0%;"></div>
         </div>
         
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
-            <span id="dispAutonomia" class="label-futuristic" style="color: #888;">Est: -- km</span>
+            <div style="display: flex; flex-direction: column;">
+                <span id="dispAutonomia" class="label-futuristic" style="color: #888;">Est: -- km</span>
+                <span id="fuelAlert" class="alert-fuel blink" style="display: none;">Reserva!</span>
+            </div>
             <span id="dispLitros" style="color: #fff; font-size: 14px; font-weight: 700;">
                 0.00<span style="color: #444; font-size: 10px;"> / 4.50L</span>
             </span>
         </div>
 
-        <div style="padding-top: 0.75rem; border-top: 1px solid #151515; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <p class="label-futuristic">Próx. Óleo em</p>
-                <span id="dispOleo" style="color: #fff; font-size: 11px; font-weight: 700;">--- km</span>
+        <div style="padding-top: 0.75rem; border-top: 1px solid #151515; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p class="label-futuristic">Manutenção Óleo</p>
+                    <span id="dispOleo" style="color: #fff; font-size: 11px;">---</span>
+                </div>
             </div>
-            <div id="oilAlert" class="blink" style="display: none; background: #450a0a; color: #f87171; font-size: 8px; padding: 2px 6px; border: 1px solid #7f1d1d; border-radius: 2px; font-weight: 700;">REVISÃO!</div>
+            <div id="oilAlert" class="blink" style="display: none; text-align: center;"></div>
         </div>
     </div>
 
@@ -126,8 +134,7 @@
     <div class="flex-grow">
         <p class="label-futuristic" style="margin-bottom: 0.5rem;">System Log_Abastecimentos</p>
         <div id="historico"></div>
-        
-        <div class="control-grid" style="margin-top: 2rem; opacity: 0.5;">
+        <div class="control-grid" style="margin-top: 2rem; opacity: 0.3;">
             <button onclick="exportarBackup()" style="font-size: 7px; padding: 0.5rem;">Exportar</button>
             <button onclick="document.getElementById('fileInput').click()" style="font-size: 7px; padding: 0.5rem;">Importar</button>
             <input type="file" id="fileInput" style="display: none;" onchange="importarBackup(event)">
@@ -136,7 +143,9 @@
 
     <script>
         const CAP_MAX = 4.5;
-        const INT_OLEO_KM = 1000;
+        const LIMITE_RESERVA = 1.5;
+        const INT_OLEO_KM = 1000.0;
+        const INT_OLEO_DIAS = 90;
 
         let db = JSON.parse(localStorage.getItem('motoDB_v2')) || {
             km: 0, kmOleo: 0, dataOleo: Date.now(), litrosNoTanque: 0, historico: [], mediaSugerida: 35
@@ -145,31 +154,49 @@
         function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
 
         function render() {
-            // Odômetro com Metros
+            // 1. ODO e Metros
             const totalFixo = db.km.toFixed(1);
             const partes = totalFixo.split('.');
-            const kmPrincipal = Math.floor(partes[0]).toLocaleString('pt-BR', { minimumIntegerDigits: 5 });
-            const metros = partes[1] || "0";
-            document.getElementById('dispTotalKm').innerText = kmPrincipal;
-            document.getElementById('dispMeters').innerText = metros;
+            document.getElementById('dispTotalKm').innerText = Math.floor(partes[0]).toLocaleString('pt-BR', { minimumIntegerDigits: 5 });
+            document.getElementById('dispMeters').innerText = partes[1] || "0";
             
-            // Lógica de Óleo
-            const kmPercorridoDesdeTroca = db.km - db.kmOleo;
-            const kmFaltando = INT_OLEO_KM - kmPercorridoDesdeTroca;
-            document.getElementById('dispOleo').innerText = `${kmFaltando.toFixed(1)} km`;
-            document.getElementById('oilAlert').style.display = (kmFaltando <= 0) ? 'block' : 'none';
+            // 2. Lógica de Óleo (Tempo e KM)
+            const kmRestante = INT_OLEO_KM - (db.km - db.kmOleo);
+            const msPassados = Date.now() - db.dataOleo;
+            const diasPassados = Math.floor(msPassados / (1000 * 60 * 60 * 24));
+            const diasRestantes = INT_OLEO_DIAS - diasPassados;
 
-            // Autonomia e Barra
+            document.getElementById('dispOleo').innerText = `${kmRestante.toFixed(1)} km ou ${diasRestantes} dias`;
+
+            const oilAlertBox = document.getElementById('oilAlert');
+            // Critérios de Alerta
+            if (kmRestante <= 0 || diasRestantes <= 0) {
+                oilAlertBox.style.display = "block";
+                oilAlertBox.className = "blink alert-red";
+                oilAlertBox.innerText = "Trocar Óleo!";
+            } else if (kmRestante <= 100 || diasRestantes <= 5) {
+                oilAlertBox.style.display = "block";
+                oilAlertBox.className = "blink alert-yellow";
+                oilAlertBox.innerText = "⚠ Prepara Troca Óleo!";
+            } else {
+                oilAlertBox.style.display = "none";
+            }
+
+            // 3. Combustível e Reserva
             const perc = (db.litrosNoTanque / CAP_MAX) * 100;
             const bar = document.getElementById('fuelBar');
             bar.style.width = Math.min(perc, 100) + '%';
-            bar.style.backgroundColor = perc < 20 ? 'var(--warning-red)' : 'var(--neon-green)';
             
+            const isReserva = db.litrosNoTanque < LIMITE_RESERVA;
+            bar.style.backgroundColor = isReserva ? 'var(--warning-red)' : 'var(--neon-green)';
+            document.getElementById('fuelAlert').style.display = isReserva ? "block" : "none";
+            if(isReserva) bar.classList.add('blink'); else bar.classList.remove('blink');
+
             document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(2);
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
             document.getElementById('dispAutonomia').innerText = `Est: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
 
-            // Histórico
+            // 4. Histórico
             const histContainer = document.getElementById('historico');
             histContainer.innerHTML = db.historico.slice(0, 5).map(h => `
                 <div class="history-card">
@@ -202,13 +229,11 @@
             const cheio = document.getElementById('inCheio').checked;
 
             if (!km || km < db.km) return alert("KM Inválido.");
-
             atualizarConsumo(km);
 
             if (cheio && litrosInput === 0) {
                 litrosInput = CAP_MAX - db.litrosNoTanque;
             }
-
             if (litrosInput <= 0 && !cheio) return alert("Informe os litros.");
 
             if (cheio) {
@@ -242,7 +267,11 @@
         function trocarOleo() {
             vibrar(100);
             const km = parseFloat(document.getElementById('inKm').value) || db.km;
-            if(confirm("Trocar óleo no KM " + km + "?")) { db.kmOleo = km; render(); }
+            if(confirm("Confirmar troca de óleo e resetar contador?")) {
+                db.kmOleo = km;
+                db.dataOleo = Date.now();
+                render();
+            }
         }
 
         function exportarBackup() {
@@ -252,7 +281,7 @@
 
         function importarBackup(e) {
             const reader = new FileReader();
-            reader.onload = (ev) => { db = JSON.parse(ev.target.result); render(); alert("Importado!"); };
+            reader.onload = (ev) => { db = JSON.parse(ev.target.result); render(); alert("Dados Importados!"); };
             reader.readAsText(e.target.files[0]);
         }
 
