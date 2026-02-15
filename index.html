@@ -16,7 +16,7 @@
             position: relative;
             overflow: hidden;
         }
-        /* Efeito de Scanlines para cara de hardware antigo */
+        /* Efeito de Scanlines (opcional, remova se preferir 100% limpo) */
         .lcd-panel::after {
             content: " ";
             display: block;
@@ -32,7 +32,8 @@
         @keyframes blinker { 50% { opacity: 0.1; } }
         input { font-family: sans-serif !important; }
         .history-card { font-family: sans-serif; background: #111; border-left: 3px solid #eab308; }
-        #dispTotalKm, #dispMedia { text-shadow: 0 0 10px rgba(0, 255, 65, 0.4); }
+        /* Sombras removidas conforme solicitado */
+        #dispTotalKm, #dispMedia { text-shadow: none; }
     </style>
 </head>
 <body class="p-4 flex flex-col min-h-screen max-w-md mx-auto">
@@ -71,13 +72,7 @@
     <div class="grid grid-cols-1 gap-3 mb-6">
         <div class="grid grid-cols-2 gap-2">
             <input type="number" inputmode="decimal" id="inKm" placeholder="KM Atual" class="bg-gray-900 p-4 text-white border border-gray-800 rounded-xl outline-none focus:border-green-600">
-            <div class="flex flex-col gap-1">
-                <input type="number" inputmode="decimal" id="inLitros" placeholder="Litros" class="bg-gray-900 p-4 text-white border border-gray-800 rounded-xl outline-none focus:border-orange-600 w-full">
-                <div class="flex gap-1">
-                    <button onclick="addLitros(1)" class="flex-1 bg-gray-800 text-[9px] py-1 rounded border border-gray-700">+1L</button>
-                    <button onclick="addLitros(2)" class="flex-1 bg-gray-800 text-[9px] py-1 rounded border border-gray-700">+2L</button>
-                </div>
-            </div>
+            <input type="number" inputmode="decimal" id="inLitros" placeholder="Litros" class="bg-gray-900 p-4 text-white border border-gray-800 rounded-xl outline-none focus:border-orange-600">
         </div>
         
         <div class="flex gap-2">
@@ -122,12 +117,6 @@
 
         function vibrar(ms = 40) {
             if (navigator.vibrate) navigator.vibrate(ms);
-        }
-
-        function addLitros(v) {
-            vibrar(20);
-            const input = document.getElementById('inLitros');
-            input.value = (parseFloat(input.value) || 0) + v;
         }
 
         function render() {
@@ -198,11 +187,9 @@
             let litrosEfetivos = litrosInput;
 
             if (cheio) {
-                // Cálculo de quanto entrou para completar
                 litrosEfetivos = (CAP_MAX - db.litrosNoTanque) + litrosInput;
                 db.litrosNoTanque = CAP_MAX;
 
-                // CÁLCULO DE MÉDIA ACUMULADA
                 const idxUltimoCheio = db.historico.findIndex(h => h.cheio === true);
                 if (idxUltimoCheio !== -1) {
                     const ultimoCheio = db.historico[idxUltimoCheio];
