@@ -3,11 +3,11 @@
   "short_name": "MotoPanel",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#0a0a0a",
+  "background_color": "#000000",
   "theme_color": "#0a0a0a",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/1165/1165969.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/1768/1768214.png",
       "sizes": "512x512",
       "type": "image/png"
     }
