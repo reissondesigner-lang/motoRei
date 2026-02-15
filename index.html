@@ -5,44 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MotoPanel PRO +</title>
     <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { background: #050505; color: #00ff41; font-family: 'Orbitron', sans-serif; }
+        /* Base Tailwind-like Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050505; color: #00ff41; font-family: 'Orbitron', sans-serif; padding: 1rem; display: flex; flex-direction: column; min-height: 100vh; max-width: 28rem; margin: 0 auto; }
+        
+        /* Layout & Grid Helpers */
+        .flex { display: flex; } .flex-col { flex-direction: column; } .flex-grow { flex-grow: 1; }
+        .justify-between { justify-content: space-between; } .items-center { align-items: center; }
+        .grid { display: grid; } .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .gap-2 { gap: 0.5rem; } .gap-3 { gap: 0.75rem; } .mb-6 { margin-bottom: 1.5rem; }
+        
+        /* Painel LCD */
         .lcd-panel { 
             background: linear-gradient(145deg, #101010, #050505); 
             border: 1px solid #222; 
-            box-shadow: inset 0 0 30px #000;
-            position: relative;
-            overflow: hidden;
+            padding: 1.25rem; border-radius: 2rem; margin-bottom: 1.5rem;
+            box-shadow: inset 0 0 30px #000, 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative; overflow: hidden;
         }
-        /* Efeito de Scanlines (opcional, remova se preferir 100% limpo) */
         .lcd-panel::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
-            background-size: 100% 4px;
-            z-index: 10;
-            pointer-events: none;
+            background-size: 100% 4px; z-index: 10; pointer-events: none;
         }
-        .fuel-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Elementos Visuais */
+        .fuel-bar-container { width: 100%; background: #030712; h: 1.25rem; border-radius: 9999px; border: 1px solid #111827; padding: 0.25rem; display: flex; overflow: hidden; height: 1.25rem; }
+        .fuel-bar { height: 100%; border-radius: 9999px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bg-green-600 { background-color: #16a34a; } .bg-red-600 { background-color: #dc2626; }
         .blink { animation: blinker 1s linear infinite; }
         @keyframes blinker { 50% { opacity: 0.1; } }
-        input { font-family: sans-serif !important; }
-        .history-card { font-family: sans-serif; background: #111; border-left: 3px solid #eab308; }
-        /* Sombras removidas conforme solicitado */
-        #dispTotalKm, #dispMedia { text-shadow: none; }
+
+        /* Tipografia */
+        .text-white { color: white; } .text-gray-500 { color: #6b7280; } .text-yellow-500 { color: #eab308; }
+        .text-3xl { font-size: 1.875rem; } .text-2xl { font-size: 1.5rem; } .text-xs { font-size: 0.75rem; }
+        .text-[9px] { font-size: 9px; } .uppercase { text-transform: uppercase; } .font-bold { font-weight: 700; }
+
+        /* Inputs e Botões */
+        input { font-family: sans-serif !important; background: #111827; color: white; border: 1px solid #1f2937; padding: 1rem; border-radius: 0.75rem; outline: none; width: 100%; }
+        input:focus { border-color: #16a34a; }
+        button { border: none; cursor: pointer; border-radius: 0.75rem; text-transform: uppercase; font-weight: 700; transition: transform 0.1s; }
+        button:active { transform: scale(0.95); }
+        .btn-orange { background: #ea580c; color: white; padding: 1rem; font-size: 0.75rem; }
+        .btn-gray { background: #1f2937; color: #d1d5db; padding: 0.75rem; font-size: 10px; }
+        .btn-blue { background: #1e40af; color: white; padding: 0.75rem; font-size: 10px; }
+
+        /* Histórico */
+        .history-card { font-family: sans-serif; background: #111; border-left: 3px solid #eab308; padding: 0.75rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
     </style>
 </head>
-<body class="p-4 flex flex-col min-h-screen max-w-md mx-auto">
+<body>
     
-    <div class="lcd-panel p-5 rounded-[2rem] mb-6 shadow-2xl border-gray-800">
-        <div class="flex justify-between items-start mb-2 relative z-20">
+    <div class="lcd-panel">
+        <div class="flex justify-between items-center mb-6 relative z-20">
             <div>
                 <span class="text-[9px] text-gray-500 block uppercase">Total ODO</span>
-                <span id="dispTotalKm" class="text-3xl font-bold text-white">000000</span> <span class="text-[10px] text-green-500">km</span>
+                <span id="dispTotalKm" class="text-3xl font-bold text-white">000.000</span> <span class="text-[10px] text-green-500">km</span>
             </div>
             <div class="text-right">
                 <span class="text-[9px] text-gray-500 block uppercase">Consumo Médio</span>
@@ -50,55 +71,55 @@
             </div>
         </div>
 
-        <div class="mb-4 relative z-20">
-            <div class="w-full bg-gray-950 h-5 rounded-full border border-gray-900 p-1 flex overflow-hidden">
-                <div id="fuelBar" class="fuel-bar h-full rounded-full bg-green-500 w-0"></div>
+        <div class="mb-6 relative z-20">
+            <div class="fuel-bar-container">
+                <div id="fuelBar" class="fuel-bar bg-green-600" style="width: 0%"></div>
             </div>
-            <div class="flex justify-between mt-2 items-baseline">
-                <span id="dispAutonomia" class="text-xs font-bold text-gray-400 italic font-sans">Est: -- km</span>
-                <span id="dispLitros" class="text-lg font-bold text-white">0.0<span class="text-xs text-gray-500">/4.5L</span></span>
+            <div class="flex justify-between mt-2">
+                <span id="dispAutonomia" class="text-xs text-gray-500">Est: -- km</span>
+                <span id="dispLitros" class="text-white font-bold">0.0<span class="text-xs text-gray-500">/4.5L</span></span>
             </div>
         </div>
 
-        <div class="border-t border-gray-900 pt-3 flex justify-between items-center relative z-20">
+        <div style="border-top: 1px solid #111; pt: 0.75rem;" class="flex justify-between items-center relative z-20">
             <div class="flex flex-col">
                 <span class="text-[9px] text-gray-500 uppercase">Óleo / Validade:</span>
-                <span id="dispOleo" class="text-sm font-bold">---</span>
+                <span id="dispOleo" class="text-xs font-bold text-white">---</span>
             </div>
-            <div id="oilAlert" class="hidden blink bg-red-950 text-red-500 px-2 py-1 rounded text-[10px] font-bold border border-red-800">TROCAR ÓLEO!</div>
+            <div id="oilAlert" class="blink" style="display:none; background:#450a0a; color:#f87171; padding:2px 8px; border-radius:4px; font-size:10px; border:1px solid #7f1d1d;">TROCAR ÓLEO!</div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-3 mb-6">
+    <div class="grid gap-3 mb-6">
         <div class="grid grid-cols-2 gap-2">
-            <input type="number" inputmode="decimal" id="inKm" placeholder="KM Atual" class="bg-gray-900 p-4 text-white border border-gray-800 rounded-xl outline-none focus:border-green-600">
-            <input type="number" inputmode="decimal" id="inLitros" placeholder="Litros" class="bg-gray-900 p-4 text-white border border-gray-800 rounded-xl outline-none focus:border-orange-600">
+            <input type="number" inputmode="decimal" id="inKm" placeholder="KM Atual">
+            <input type="number" inputmode="decimal" id="inLitros" placeholder="Litros">
         </div>
         
         <div class="flex gap-2">
-            <label class="flex flex-1 items-center justify-center bg-gray-900 rounded-xl border border-gray-800 p-3 select-none active:bg-gray-800">
-                <span class="text-[10px] mr-2 uppercase text-gray-400 font-sans">Tanque Cheio?</span>
-                <input type="checkbox" id="inCheio" class="w-6 h-6 accent-green-600">
+            <label style="flex:1; background:#111827; border-radius:0.75rem; border:1px solid #1f2937; display:flex; align-items:center; justify-content:center; padding:0.75rem;">
+                <span style="font-size:10px; color:#9ca3af; margin-right:0.5rem; text-transform:uppercase;">Cheio?</span>
+                <input type="checkbox" id="inCheio" style="width:1.5rem; height:1.5rem; accent-color:#16a34a;">
             </label>
-            <button onclick="abastecer()" class="flex-1 bg-orange-600 text-white font-bold rounded-xl uppercase text-xs p-4 active:scale-95 transition-transform">Abastecer</button>
+            <button onclick="abastecer()" class="btn-orange" style="flex:1;">Abastecer</button>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-            <button onclick="atualizarApenasKm()" class="bg-gray-800 text-gray-300 font-bold p-3 rounded-xl uppercase text-[10px]">Atualizar KM</button>
-            <button onclick="trocarOleo()" class="bg-blue-800 text-white font-bold p-3 rounded-xl uppercase text-[10px]">Trocar Óleo</button>
+            <button onclick="atualizarApenasKm()" class="btn-gray">Atualizar KM</button>
+            <button onclick="trocarOleo()" class="btn-blue">Trocar Óleo</button>
         </div>
     </div>
 
     <div class="flex-grow">
-        <h3 class="text-[10px] text-gray-500 uppercase mb-2 tracking-widest px-1">Últimos Abastecimentos</h3>
-        <div id="historico" class="space-y-2 font-sans"></div>
+        <h3 style="font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.5rem;">Últimos Abastecimentos</h3>
+        <div id="historico"></div>
         
-        <div class="grid grid-cols-2 gap-2 mt-8 px-2">
-            <button onclick="exportarBackup()" class="text-[9px] text-blue-500 uppercase tracking-widest border border-blue-900/30 py-2 rounded-lg">Exportar JSON</button>
-            <button onclick="document.getElementById('fileInput').click()" class="text-[9px] text-purple-500 uppercase tracking-widest border border-purple-900/30 py-2 rounded-lg">Importar JSON</button>
-            <input type="file" id="fileInput" class="hidden" accept=".json" onchange="importarBackup(event)">
+        <div class="grid grid-cols-2 gap-2 mt-8">
+            <button onclick="exportarBackup()" style="font-size:9px; color:#3b82f6; border:1px solid #1e3a8a; background:transparent; padding:0.5rem;">Exportar</button>
+            <button onclick="document.getElementById('fileInput').click()" style="font-size:9px; color:#a855f7; border:1px solid #581c87; background:transparent; padding:0.5rem;">Importar</button>
+            <input type="file" id="fileInput" style="display:none" accept=".json" onchange="importarBackup(event)">
         </div>
-        <button onclick="limparDados()" class="mt-4 text-[9px] text-gray-700 uppercase w-full text-center tracking-widest pb-8">Limpar todos os dados</button>
+        <button onclick="limparDados()" style="margin-top:1rem; font-size:9px; color:#374151; background:transparent; width:100%; text-align:center; padding-bottom:2rem;">Limpar tudo</button>
     </div>
 
     <script>
@@ -107,52 +128,40 @@
         const INT_OLEO_DIAS = 90;
 
         let db = JSON.parse(localStorage.getItem('motoDB_v2')) || {
-            km: 0,
-            kmOleo: 0,
-            dataOleo: Date.now(),
-            litrosNoTanque: 0,
-            historico: [],
-            mediaSugerida: 35
+            km: 0, kmOleo: 0, dataOleo: Date.now(), litrosNoTanque: 0, historico: [], mediaSugerida: 35
         };
 
-        function vibrar(ms = 40) {
-            if (navigator.vibrate) navigator.vibrate(ms);
-        }
+        function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
 
         function render() {
-            const kmFormatado = Math.floor(db.km).toLocaleString('pt-BR', { 
-        minimumIntegerDigits: 6, 
-        useGrouping: true 
-    });
-    document.getElementById('dispTotalKm').innerText = kmFormatado;
+            // Formatação com milhar
+            const kmFormatado = Math.floor(db.km).toLocaleString('pt-BR', { minimumIntegerDigits: 6, useGrouping: true });
+            document.getElementById('dispTotalKm').innerText = kmFormatado;
             
-            // Lógica Óleo
             const kmRest = INT_OLEO_KM - (db.km - db.kmOleo);
             const diasRest = Math.ceil((db.dataOleo + (INT_OLEO_DIAS * 86400000) - Date.now()) / 86400000);
             document.getElementById('dispOleo').innerText = `${kmRest}km / ${diasRest}d`;
-            document.getElementById('oilAlert').classList.toggle('hidden', kmRest > 0 && diasRest > 0);
+            document.getElementById('oilAlert').style.display = (kmRest <= 0 || diasRest <= 0) ? 'block' : 'none';
 
-            // Combustível
             const perc = (db.litrosNoTanque / CAP_MAX) * 100;
             const bar = document.getElementById('fuelBar');
-            bar.style.width = `${Math.min(perc, 100)}%`;
-            bar.className = `fuel-bar h-full rounded-full ${perc < 20 ? 'bg-red-600 blink' : 'bg-green-600'}`;
+            bar.style.width = Math.min(perc, 100) + '%';
+            bar.style.backgroundColor = perc < 20 ? '#dc2626' : '#16a34a';
             
             document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(1);
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
             document.getElementById('dispAutonomia').innerText = `Est: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
 
-            // Histórico
             const histContainer = document.getElementById('historico');
             histContainer.innerHTML = db.historico.slice(0, 5).map(h => `
-                <div class="history-card p-3 rounded-lg flex justify-between items-center text-white">
-                    <div class="text-xs">
-                        <div class="text-gray-500 text-[9px]">${new Date(h.data).toLocaleDateString()}</div>
-                        <b>${h.km} km</b>
+                <div class="history-card">
+                    <div style="font-size:0.75rem; color:white;">
+                        <div style="font-size:9px; color:#6b7280;">${new Date(h.data).toLocaleDateString()}</div>
+                        <b>${Math.floor(h.km).toLocaleString('pt-BR')} km</b>
                     </div>
-                    <div class="text-right">
-                        <div class="text-orange-400 font-bold text-xs">${h.litros.toFixed(2)}L</div>
-                        <div class="text-[9px] text-gray-500">${h.cheio ? 'Tanque Cheio' : 'Parcial'}</div>
+                    <div style="text-align:right;">
+                        <div style="color:#fb923c; font-weight:700; font-size:0.75rem;">${h.litros.toFixed(2)}L</div>
+                        <div style="font-size:9px; color:#6b7280;">${h.cheio ? 'Cheio' : 'Parcial'}</div>
                     </div>
                 </div>
             `).join('');
@@ -168,42 +177,27 @@
             db.km = novoKm;
         }
 
-        function atualizarApenasKm() {
-            vibrar();
-            const km = parseFloat(document.getElementById('inKm').value);
-            if (!km || km < db.km) return alert("KM inválido");
-            atualizarConsumo(km);
-            render();
-            alert("KM Atualizado!");
-        }
-
         function abastecer() {
             vibrar(60);
             const km = parseFloat(document.getElementById('inKm').value);
             const litrosInput = parseFloat(document.getElementById('inLitros').value) || 0;
             const cheio = document.getElementById('inCheio').checked;
 
-            if (!km || km < db.km) return alert("KM inválido");
-            if (!litrosInput && !cheio) return alert("Informe os litros ou marque cheio");
-
+            if (!km || km < db.km) return alert("Verifique o KM");
             atualizarConsumo(km);
 
             let litrosEfetivos = litrosInput;
-
             if (cheio) {
                 litrosEfetivos = (CAP_MAX - db.litrosNoTanque) + litrosInput;
                 db.litrosNoTanque = CAP_MAX;
-
                 const idxUltimoCheio = db.historico.findIndex(h => h.cheio === true);
                 if (idxUltimoCheio !== -1) {
                     const ultimoCheio = db.historico[idxUltimoCheio];
                     const distTotal = km - ultimoCheio.km;
                     const litrosParciais = db.historico.slice(0, idxUltimoCheio).reduce((acc, h) => acc + h.litros, 0);
                     const consumoTotal = litrosParciais + litrosEfetivos;
-
                     if (distTotal > 0 && consumoTotal > 0) {
-                        const mediaReal = distTotal / consumoTotal;
-                        db.mediaSugerida = (db.mediaSugerida * 0.3) + (mediaReal * 0.7);
+                        db.mediaSugerida = (db.mediaSugerida * 0.3) + ((distTotal / consumoTotal) * 0.7);
                     }
                 }
             } else {
@@ -211,50 +205,37 @@
             }
 
             db.historico.unshift({ km, litros: litrosEfetivos, cheio, data: Date.now() });
-            
             document.getElementById('inLitros').value = '';
             document.getElementById('inCheio').checked = false;
             render();
-            alert("Abastecimento Salvo!");
+        }
+
+        function atualizarApenasKm() {
+            vibrar();
+            const km = parseFloat(document.getElementById('inKm').value);
+            if (km >= db.km) { atualizarConsumo(km); render(); }
         }
 
         function trocarOleo() {
             vibrar(100);
             const km = parseFloat(document.getElementById('inKm').value) || db.km;
-            if(confirm("Troca de óleo no KM " + km + "?")) {
-                db.kmOleo = km;
-                db.dataOleo = Date.now();
-                render();
+            if(confirm("Trocar agora no KM " + km + "?")) {
+                db.kmOleo = km; db.dataOleo = Date.now(); render();
             }
         }
 
         function exportarBackup() {
-            vibrar();
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `moto_backup.json`);
-            dlAnchor.click();
+            const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "moto.json"); dl.click();
         }
 
-        function importarBackup(event) {
+        function importarBackup(e) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    db = JSON.parse(e.target.result);
-                    render();
-                    alert("Dados importados!");
-                } catch { alert("Arquivo inválido"); }
-            };
-            reader.readAsText(event.target.files[0]);
+            reader.onload = function(ev) { db = JSON.parse(ev.target.result); render(); };
+            reader.readAsText(e.target.files[0]);
         }
 
-        function limparDados() {
-            if(confirm("APAGAR TUDO?")) {
-                localStorage.removeItem('motoDB_v2');
-                location.reload();
-            }
-        }
+        function limparDados() { if(confirm("Apagar?")) { localStorage.clear(); location.reload(); } }
 
         render();
     </script>
