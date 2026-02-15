@@ -1,72 +1,119 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle de Moto - PWA</title>
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotoHealth - Monitor</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #121212; color: white; }
+        .card { background: #1e1e1e; border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+        .low-fuel { color: #ff4444; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+    </style>
 </head>
-<body>
-<div class="app-container">
-    <header>
-        <h1>Painel Futurista da Moto</h1>
+<body class="p-4 pb-20">
+    <header class="mb-6">
+        <h1 class="text-2xl font-bold text-yellow-500">MotoHealth 🏍️</h1>
+        <p class="text-gray-400 text-sm">Status em tempo real</p>
     </header>
 
-    <section class="dashboard">
-        <div class="indicator">
-            <h2>KM Atual</h2>
-            <p id="kmAtualDisplay">0</p>
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="card text-center">
+            <span class="text-xs text-gray-400">Óleo em</span>
+            <div id="oilStatus" class="text-xl font-bold">-- km</div>
         </div>
-
-        <div class="indicator velocimetro">
-            <h2>Autonomia (km)</h2>
-            <canvas id="velocimetroAutonomia" width="200" height="200"></canvas>
+        <div class="card text-center">
+            <span class="text-xs text-gray-400">Tanque Est.</span>
+            <div id="fuelLevel" class="text-xl font-bold">-- L</div>
         </div>
+    </div>
 
-        <div class="indicator velocimetro">
-            <h2>Combustível (L)</h2>
-            <canvas id="velocimetroCombustivel" width="200" height="200"></canvas>
+    <div id="fuelAlert" class="hidden low-fuel text-center font-bold mb-4 italic">
+        ⚠️ ABASTECER IMEDIATAMENTE!
+    </div>
+
+    <div class="card">
+        <h2 class="text-lg font-semibold mb-4 text-yellow-500">Atualizar Dados</h2>
+        <input type="number" id="kmAtual" placeholder="KM Atual" class="w-full p-3 mb-3 rounded bg-gray-800 border border-gray-700">
+        <input type="number" id="litros" placeholder="Litros Abastecidos (opcional)" class="w-full p-3 mb-3 rounded bg-gray-800 border border-gray-700">
+        <div class="flex gap-2">
+            <button onclick="salvarDados(false)" class="flex-1 bg-blue-600 p-3 rounded font-bold">Abasteci</button>
+            <button onclick="salvarDados(true)" class="flex-1 bg-yellow-600 p-3 rounded font-bold">Troquei Óleo</button>
         </div>
+    </div>
 
-        <div class="indicator">
-            <h2>Próxima Troca de Óleo</h2>
-            <p id="proximaOleoDisplay">0 km / 0 dias</p>
-        </div>
-    </section>
+    <div class="card text-sm text-gray-400">
+        <p>Média de Consumo: <span id="avgConsumo" class="text-white">0</span> km/L</p>
+        <p>Autonomia Estimada: <span id="autonomia" class="text-white">0</span> km</p>
+    </div>
 
-    <section class="forms">
-        <h2>Registrar Abastecimento</h2>
-        <form id="formAbastecimento">
-            <input type="number" id="kmAbastecimento" placeholder="KM Atual" required>
-            <input type="number" step="0.01" id="litros" placeholder="Litros" required>
-            <input type="number" step="0.01" id="valor" placeholder="Valor R$" required>
-            <label><input type="checkbox" id="tanqueCheio"> Tanque cheio</label>
-            <button type="submit">Registrar</button>
-        </form>
+    <script>
+        // Configurações da Moto (Você pode ajustar esses valores)
+        const CAPACIDADE_TANQUE = 15; // Litros
+        const INTERVALO_OLEO = 3000; // Troca a cada 3000km
+        const RESERVA = 3; // Alerta com 3 litros
 
-        <h2>Registrar Troca de Óleo</h2>
-        <form id="formOleo">
-            <input type="number" id="kmOleo" placeholder="KM Atual" required>
-            <button type="submit">Registrar</button>
-        </form>
-    </section>
+        function atualizarUI() {
+            const data = JSON.parse(localStorage.getItem('motoData')) || { km: 0, kmOleo: 0, litrosNoTanque: 0, totalKm: 0, totalLitros: 0 };
+            
+            // Cálculo Óleo
+            const kmFaltantes = INTERVALO_OLEO - (data.km - data.kmOleo);
+            document.getElementById('oilStatus').innerText = `${kmFaltantes} km`;
+            document.getElementById('oilStatus').style.color = kmFaltantes < 500 ? '#ff4444' : '#44ff44';
 
-    <section class="graficos">
-        <h2>Histórico de Consumo</h2>
-        <canvas id="graficoConsumo" width="400" height="200"></canvas>
-        <h2>Próxima Troca de Óleo</h2>
-        <canvas id="graficoOleo" width="400" height="200"></canvas>
-    </section>
-</div>
+            // Cálculo Combustível
+            document.getElementById('fuelLevel').innerText = `${data.litrosNoTanque.toFixed(1)} L`;
+            
+            // Alerta Tanque
+            const alert = document.getElementById('fuelAlert');
+            data.litrosNoTanque <= RESERVA ? alert.classList.remove('hidden') : alert.classList.add('hidden');
 
-<script src="script.js"></script>
-<script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-        .then(()=>console.log('Service Worker registrado'))
-        .catch(err=>console.log('Erro SW:', err));
-}
-</script>
+            // Consumo e Autonomia
+            const media = data.totalLitros > 0 ? (data.totalKm / data.totalLitros).toFixed(1) : 0;
+            document.getElementById('avgConsumo').innerText = media;
+            document.getElementById('autonomia').innerText = (media * data.litrosNoTanque).toFixed(1);
+        }
+
+        function salvarDados(isOleo) {
+            const km = parseFloat(document.getElementById('kmAtual').value);
+            const l = parseFloat(document.getElementById('litros').value) || 0;
+            
+            if (!km) return alert("Insira a quilometragem!");
+
+            let data = JSON.parse(localStorage.getItem('motoData')) || { km: km, kmOleo: km, litrosNoTanque: 0, totalKm: 0, totalLitros: 0 };
+            
+            const diffKm = km - data.km;
+            const mediaAnterior = data.totalLitros > 0 ? data.totalKm / data.totalLitros : 30; // 30 padrão se não houver dados
+
+            // Diminuir combustível baseado no consumo estimado
+            if (diffKm > 0) {
+                data.litrosNoTanque -= (diffKm / mediaAnterior);
+                if (data.litrosNoTanque < 0) data.litrosNoTanque = 0;
+            }
+
+            if (l > 0) {
+                data.litrosNoTanque += l;
+                if (data.litrosNoTanque > CAPACIDADE_TANQUE) data.litrosNoTanque = CAPACIDADE_TANQUE;
+                data.totalKm += diffKm > 0 ? diffKm : 0;
+                data.totalLitros += l;
+            }
+
+            data.km = km;
+            if (isOleo) data.kmOleo = km;
+
+            localStorage.setItem('motoData', JSON.stringify(data));
+            atualizarUI();
+            alert("Dados salvos!");
+        }
+
+        // Registro do Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+        
+        atualizarUI();
+    </script>
 </body>
 </html>
