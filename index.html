@@ -8,64 +8,60 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root { --neon-green: #00ff41; --dark-bg: #050505; --text-gray: #555; --warning-red: #dc2626; --warning-yellow: #eab308; }
+        :root { --neon-green: #00ff41; --dark-bg: #050505; --text-gray: #666; --warning-red: #dc2626; --warning-yellow: #eab308; }
 
         body { 
             background: var(--dark-bg); color: var(--neon-green); font-family: 'Orbitron', sans-serif; 
-            padding: 1rem; display: flex; flex-direction: column; min-height: 100vh; max-width: 28rem; margin: 0 auto;
+            padding: 1.25rem; display: flex; flex-direction: column; min-height: 100vh; max-width: 30rem; margin: 0 auto;
+            font-size: 16px; /* Aumentado para melhor visibilidade */
         }
 
-        .label-futuristic { font-size: 8px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; }
+        .label-futuristic { font-size: 10px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; }
 
         .lcd-panel { 
-            background: linear-gradient(145deg, #0f0f0f, #050505); border: 1px solid #1a1a1a; 
-            padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: inset 0 0 20px #000;
+            background: linear-gradient(145deg, #0f0f0f, #050505); border: 2px solid #1a1a1a; 
+            padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: inset 0 0 25px #000;
             position: relative; overflow: hidden;
         }
-        .lcd-panel::after {
-            content: ""; display: block; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px; pointer-events: none; z-index: 10;
+
+        /* Odômetro Ampliado */
+        .odo-container { display: flex; align-items: baseline; gap: 3px; }
+        .val-main { color: #fff; font-size: 2.2rem; font-weight: 700; }
+        .val-meters { color: #000; background: #fff; padding: 0 6px; border-radius: 3px; font-size: 1.8rem; font-weight: 700; margin-left: 5px; }
+        .val-sub { color: #eab308; font-size: 1.8rem; font-weight: 700; }
+        .unit { font-size: 11px; color: var(--text-gray); text-transform: uppercase; }
+
+        .fuel-bar-container { width: 100%; background: #000; height: 16px; border-radius: 4px; border: 1px solid #1a1a1a; margin: 12px 0; overflow: hidden; padding: 2px; }
+        .fuel-bar { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+
+        /* Estilo dos Alertas Grandes (14px) */
+        .alert-box { 
+            font-size: 14px; font-weight: 700; padding: 8px; border-radius: 6px; 
+            text-align: center; text-transform: uppercase; margin-top: 10px;
         }
+        .alert-red { background: #450a0a; color: #f87171; border: 1px solid #7f1d1d; }
+        .alert-yellow { background: #422006; color: #fbbf24; border: 1px solid #78350f; }
 
-        .odo-container { display: flex; align-items: baseline; gap: 2px; }
-        .val-main { color: #fff; font-size: 1.8rem; font-weight: 700; }
-        .val-meters { color: #000; background: #fff; padding: 0 4px; border-radius: 2px; font-size: 1.5rem; font-weight: 700; margin-left: 4px; }
-        .val-sub { color: #eab308; font-size: 1.5rem; font-weight: 700; }
-        .unit { font-size: 9px; color: var(--text-gray); margin-left: 2px; text-transform: uppercase; }
-
-        .fuel-bar-container { width: 100%; background: #000; height: 12px; border-radius: 2px; border: 1px solid #1a1a1a; margin: 10px 0; overflow: hidden; padding: 2px; }
-        .fuel-bar { height: 100%; border-radius: 1px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
         
         input { 
-            background: #0a0a0a; color: #fff; border: 1px solid #1a1a1a; padding: 1rem; 
-            border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 13px; text-align: center; outline: none; width: 100%;
+            background: #0a0a0a; color: #fff; border: 2px solid #222; padding: 1.2rem; 
+            border-radius: 0.75rem; font-family: 'Orbitron', sans-serif; font-size: 16px; text-align: center; outline: none; width: 100%;
         }
         input:focus { border-color: var(--neon-green); }
 
         button { 
-            background: #111; color: #ccc; border: 1px solid #222; padding: 1rem; 
-            border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 9px; 
-            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; width: 100%;
+            background: #111; color: #ccc; border: 1px solid #333; padding: 1.2rem; 
+            border-radius: 0.75rem; font-family: 'Orbitron', sans-serif; font-size: 11px; 
+            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
         }
-        button:active { transform: scale(0.97); background: #1a1a1a; }
-        .btn-abastecer { background: #ea580c; color: #fff; border: none; font-size: 11px; font-weight: 700; }
+        .btn-abastecer { background: #ea580c; color: #fff; border: none; font-size: 13px; font-weight: 700; }
         
-        .checkbox-container { display: flex; align-items: center; justify-content: center; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 0.5rem; padding: 0.5rem; }
-        input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--neon-green); margin-left: 8px; cursor: pointer; }
+        .checkbox-container { display: flex; align-items: center; justify-content: center; background: #0a0a0a; border: 2px solid #222; border-radius: 0.75rem; padding: 0.5rem; }
+        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--neon-green); margin-left: 10px; }
 
-        .history-card { background: #080808; border-left: 2px solid var(--neon-green); padding: 0.75rem; border-radius: 0.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .history-info { font-family: sans-serif; font-size: 11px; color: #eee; }
-        .history-meta { font-size: 8px; color: var(--text-gray); text-transform: uppercase; }
-
-        /* Estilos dos Alertas */
-        #oilAlert { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 4px; border: 1px solid transparent; }
-        .alert-red { background: #450a0a; color: #f87171; border-color: #7f1d1d !important; }
-        .alert-yellow { background: #422006; color: #fbbf24; border-color: #78350f !important; }
-        .alert-fuel { font-size: 10px; color: var(--warning-red); font-weight: 700; text-transform: uppercase; }
-
+        .history-card { background: #080808; border-left: 3px solid var(--neon-green); padding: 1rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+        
         .blink { animation: blinker 1s linear infinite; }
         @keyframes blinker { 50% { opacity: 0.3; } }
     </style>
@@ -75,7 +71,7 @@
     <div class="lcd-panel">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
             <div>
-                <p class="label-futuristic">Odômetro Total</p>
+                <p class="label-futuristic">Total ODO</p>
                 <div class="odo-container">
                     <span id="dispTotalKm" class="val-main">00.000</span>
                     <span id="dispMeters" class="val-meters">0</span>
@@ -83,33 +79,30 @@
                 </div>
             </div>
             <div style="text-align: right;">
-                <p class="label-futuristic">Média Real</p>
-                <span id="dispMedia" class="val-sub">0.0</span><span class="unit">km/L</span>
+                <p class="label-futuristic">Média km/L</p>
+                <span id="dispMedia" class="val-sub">0.0</span>
             </div>
         </div>
 
         <div class="fuel-bar-container">
-            <div id="fuelBar" class="fuel-bar" style="width: 0%;"></div>
+            <div id="fuelBar" class="fuel-bar"></div>
         </div>
         
-        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
-            <div style="display: flex; flex-direction: column;">
-                <span id="dispAutonomia" class="label-futuristic" style="color: #888;">Est: -- km</span>
-                <span id="fuelAlert" class="alert-fuel blink" style="display: none;">Reserva!</span>
-            </div>
-            <span id="dispLitros" style="color: #fff; font-size: 14px; font-weight: 700;">
-                0.00<span style="color: #444; font-size: 10px;"> / 4.50L</span>
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span id="dispAutonomia" class="label-futuristic" style="color: #aaa; font-size: 12px;">Est: -- km</span>
+            <span id="dispLitros" style="color: #fff; font-size: 16px; font-weight: 700;">
+                0.00<span style="color: #555; font-size: 12px;"> / 4.50L</span>
             </span>
         </div>
 
-        <div style="padding-top: 0.75rem; border-top: 1px solid #151515; display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <p class="label-futuristic">Manutenção Óleo</p>
-                    <span id="dispOleo" style="color: #fff; font-size: 11px;">---</span>
-                </div>
+        <div id="fuelAlertBox" class="alert-box alert-red blink" style="display: none;">⚠ Reserva de Combustível</div>
+
+        <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #222; display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <p class="label-futuristic">Manutenção Óleo</p>
+                <span id="dispOleo" style="color: #fff; font-size: 12px; font-weight: 700;">--- km</span>
             </div>
-            <div id="oilAlert" class="blink" style="display: none; text-align: center;"></div>
+            <div id="oilAlert" class="alert-box blink" style="display: none; margin-top: 0; padding: 5px 10px;"></div>
         </div>
     </div>
 
@@ -126,17 +119,17 @@
         <button onclick="abastecer()" class="btn-abastecer">Abastecer</button>
     </div>
 
-    <div class="control-grid" style="margin-bottom: 1.5rem;">
+    <div class="control-grid" style="margin-bottom: 2rem;">
         <button onclick="atualizarApenasKm()">Sync KM</button>
-        <button onclick="trocarOleo()" style="border-color: #1e3a8a;">Trocar Óleo</button>
+        <button onclick="trocarOleo()" style="border-color: #1e3a8a; color: #60a5fa;">Trocar Óleo</button>
     </div>
 
     <div class="flex-grow">
-        <p class="label-futuristic" style="margin-bottom: 0.5rem;">System Log_Abastecimentos</p>
+        <p class="label-futuristic" style="margin-bottom: 0.75rem;">Histórico Recente</p>
         <div id="historico"></div>
-        <div class="control-grid" style="margin-top: 2rem; opacity: 0.3;">
-            <button onclick="exportarBackup()" style="font-size: 7px; padding: 0.5rem;">Exportar</button>
-            <button onclick="document.getElementById('fileInput').click()" style="font-size: 7px; padding: 0.5rem;">Importar</button>
+        <div class="control-grid" style="margin-top: 2rem; opacity: 0.2;">
+            <button onclick="exportarBackup()" style="font-size: 8px;">Exportar</button>
+            <button onclick="document.getElementById('fileInput').click()" style="font-size: 8px;">Importar</button>
             <input type="file" id="fileInput" style="display: none;" onchange="importarBackup(event)">
         </div>
     </div>
@@ -154,59 +147,59 @@
         function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
 
         function render() {
-            // 1. ODO e Metros
+            // ODO e Metros
             const totalFixo = db.km.toFixed(1);
             const partes = totalFixo.split('.');
             document.getElementById('dispTotalKm').innerText = Math.floor(partes[0]).toLocaleString('pt-BR', { minimumIntegerDigits: 5 });
             document.getElementById('dispMeters').innerText = partes[1] || "0";
             
-            // 2. Lógica de Óleo (Tempo e KM)
+            // Lógica de Óleo
             const kmRestante = INT_OLEO_KM - (db.km - db.kmOleo);
             const msPassados = Date.now() - db.dataOleo;
-            const diasPassados = Math.floor(msPassados / (1000 * 60 * 60 * 24));
-            const diasRestantes = INT_OLEO_DIAS - diasPassados;
+            const diasRestantes = INT_OLEO_DIAS - Math.floor(msPassados / (1000 * 60 * 60 * 24));
 
-            document.getElementById('dispOleo').innerText = `${kmRestante.toFixed(1)} km ou ${diasRestantes} dias`;
+            document.getElementById('dispOleo').innerText = `${kmRestante.toFixed(1)} km / ${diasRestantes} d`;
 
             const oilAlertBox = document.getElementById('oilAlert');
-            // Critérios de Alerta
             if (kmRestante <= 0 || diasRestantes <= 0) {
                 oilAlertBox.style.display = "block";
-                oilAlertBox.className = "blink alert-red";
+                oilAlertBox.className = "alert-box alert-red blink";
                 oilAlertBox.innerText = "Trocar Óleo!";
             } else if (kmRestante <= 100 || diasRestantes <= 5) {
                 oilAlertBox.style.display = "block";
-                oilAlertBox.className = "blink alert-yellow";
-                oilAlertBox.innerText = "⚠ Prepara Troca Óleo!";
+                oilAlertBox.className = "alert-box alert-yellow blink";
+                oilAlertBox.innerText = "⚠ Prepara!";
             } else {
                 oilAlertBox.style.display = "none";
             }
 
-            // 3. Combustível e Reserva
+            // Combustível e Reserva
             const perc = (db.litrosNoTanque / CAP_MAX) * 100;
             const bar = document.getElementById('fuelBar');
             bar.style.width = Math.min(perc, 100) + '%';
             
             const isReserva = db.litrosNoTanque < LIMITE_RESERVA;
+            const fuelAlertBox = document.getElementById('fuelAlertBox');
+            
             bar.style.backgroundColor = isReserva ? 'var(--warning-red)' : 'var(--neon-green)';
-            document.getElementById('fuelAlert').style.display = isReserva ? "block" : "none";
+            fuelAlertBox.style.display = isReserva ? "block" : "none";
             if(isReserva) bar.classList.add('blink'); else bar.classList.remove('blink');
 
             document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(2);
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
             document.getElementById('dispAutonomia').innerText = `Est: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
 
-            // 4. Histórico
+            // Histórico
             const histContainer = document.getElementById('historico');
             histContainer.innerHTML = db.historico.slice(0, 5).map(h => `
                 <div class="history-card">
                     <div>
-                        <p class="history-meta">${new Date(h.data).toLocaleDateString()}</p>
-                        <p class="history-info"><b>${h.km.toLocaleString('pt-BR')}</b> km</p>
+                        <p class="label-futuristic" style="color:#555">${new Date(h.data).toLocaleDateString()}</p>
+                        <p style="font-size:14px; color:#fff"><b>${h.km.toLocaleString('pt-BR')}</b> km</p>
                     </div>
                     <div style="text-align: right;">
-                        <p style="color: #eab308; font-weight: 700; font-size: 12px;">${h.litros.toFixed(2)}L</p>
-                        <p class="history-meta">${h.cheio ? 'Cheio' : 'Parcial'}</p>
+                        <p style="color: #eab308; font-weight: 700; font-size: 14px;">${h.litros.toFixed(2)}L</p>
+                        <p class="label-futuristic">${h.cheio ? 'Cheio' : 'Parcial'}</p>
                     </div>
                 </div>
             `).join('');
@@ -267,7 +260,7 @@
         function trocarOleo() {
             vibrar(100);
             const km = parseFloat(document.getElementById('inKm').value) || db.km;
-            if(confirm("Confirmar troca de óleo e resetar contador?")) {
+            if(confirm("Troca de óleo realizada no KM " + km + "?")) {
                 db.kmOleo = km;
                 db.dataOleo = Date.now();
                 render();
@@ -281,7 +274,7 @@
 
         function importarBackup(e) {
             const reader = new FileReader();
-            reader.onload = (ev) => { db = JSON.parse(ev.target.result); render(); alert("Dados Importados!"); };
+            reader.onload = (ev) => { db = JSON.parse(ev.target.result); render(); alert("Importado!"); };
             reader.readAsText(e.target.files[0]);
         }
 
