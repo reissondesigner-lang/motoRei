@@ -1,4 +1,4 @@
-const CACHE_NAME = 'moto-pwa-v1';
+const CACHE_NAME = 'moto-pwa-v2';
 const FILES_TO_CACHE = [
     '/',
     '/index.html',
@@ -7,9 +7,9 @@ const FILES_TO_CACHE = [
     '/manifest.json'
 ];
 
-self.addEventListener('install', evt => {
+self.addEventListener('install', evt=>{
     evt.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
+        caches.open(CACHE_NAME).then(cache=>{
             console.log('Arquivos em cache');
             return cache.addAll(FILES_TO_CACHE);
         })
@@ -17,21 +17,19 @@ self.addEventListener('install', evt => {
     self.skipWaiting();
 });
 
-self.addEventListener('activate', evt => {
+self.addEventListener('activate', evt=>{
     evt.waitUntil(
-        caches.keys().then(keys => {
-            return Promise.all(
-                keys.map(key => {
-                    if (key !== CACHE_NAME) return caches.delete(key);
-                })
-            );
+        caches.keys().then(keys=>{
+            return Promise.all(keys.map(k=>{
+                if(k!==CACHE_NAME) return caches.delete(k);
+            }));
         })
     );
     self.clients.claim();
 });
 
-self.addEventListener('fetch', evt => {
+self.addEventListener('fetch', evt=>{
     evt.respondWith(
-        caches.match(evt.request).then(resp => resp || fetch(evt.request))
+        caches.match(evt.request).then(resp=>resp || fetch(evt.request))
     );
 });
