@@ -92,7 +92,18 @@
         };
 
         function render() {
-            document.getElementById('dispTotalKm').innerText = Math.floor(db.km).toString().padStart(6, '0');
+            const kmFormatado = db.km.toLocaleString('pt-BR', { minimumIntegerDigits: 6, useGrouping: false });
+            document.getElementById('dispTotalKm').innerText = kmFormatado;
+            const perc = (db.litrosNoTanque / CAP_MAX) * 100;
+    const fuelBar = document.getElementById('fuelBar');
+    
+    // Cores dinâmicas da barra
+    fuelBar.style.width = `${Math.min(perc, 100)}%`;
+    fuelBar.className = `fuel-bar h-full rounded-full ${perc < 20 ? 'bg-red-600 blink' : 'bg-green-500'}`;
+    
+    // Adiciona efeito de alerta no painel se estiver na reserva
+    const panel = document.querySelector('.lcd-panel');
+    perc < 15 ? panel.classList.add('border-red-900') : panel.classList.remove('border-red-900');
             
             // Lógica Óleo
             const kmRest = INT_OLEO_KM - (db.km - db.kmOleo);
