@@ -235,51 +235,62 @@
             db.km = novoKm;
         }
 
-        function abastecer() {
-            vibrar(60);
-            const km = parseFloat(document.getElementById('inKm').value);
-            const litrosInput = parseFloat(document.getElementById('inLitros').value) || 0;
-            const cheio = document.getElementById('inCheio').checked;
+       function abastecer() {
+    vibrar(60);
+    const km = parseFloat(document.getElementById('inKm').value);
+    const litrosInput = parseFloat(document.getElementById('inLitros').value) || 0;
+    const cheio = document.getElementById('inCheio').checked;
 
-            if (!km || km < db.km) return alert("Erro: KM Inválido.");
-            if (!litrosInput && !cheio) return alert("Erro: Informe Litros ou Cheio.");
+    if (!km || km < db.km) return alert("Erro: KM Inválido.");
+    if (litrosInput <= 0) return alert("Erro: Informe os litros abastecidos.");
 
-            // 1. Desconta o que rodou até o posto
-            atualizarConsumo(km);
+    // 1. Atualiza o odômetro antes de registrar o novo combustível
+    db.km = km;
 
-            let litrosEfetivos = litrosInput;
-
-            if (cheio) {
-                // Calcula quanto realmente coube no tanque
-                litrosEfetivos = (CAP_MAX - db.litrosNoTanque) + litrosInput;
-                db.litrosNoTanque = CAP_MAX;
-
-                // CÁLCULO DE MÉDIA ACUMULADA (Ponto a Ponto entre Cheios)
-                const idxUltimoCheio = db.historico.findIndex(h => h.cheio === true);
-                if (idxUltimoCheio !== -1) {
-                    const ultimoCheio = db.historico[idxUltimoCheio];
-                    const distTotal = km - ultimoCheio.km;
-                    
-                    // Soma litros de todos os abastecimentos parciais após o último cheio
-                    const litrosNoMeio = db.historico.slice(0, idxUltimoCheio).reduce((acc, h) => acc + h.litros, 0);
-                    const consumoTotal = litrosNoMeio + litrosEfetivos;
-
-                    if (distTotal > 0 && consumoTotal > 0) {
-                        const mediaReal = distTotal / consumoTotal;
-                        // Média ponderada (70% peso para o comportamento atual)
-                        db.mediaSugerida = (db.mediaSugerida * 0.3) + (mediaReal * 0.7);
-                    }
-                }
-            } else {
-                db.litrosNoTanque = Math.min(CAP_MAX, db.litrosNoTanque + litrosInput);
-            }
-
-            db.historico.unshift({ km, litros: litrosEfetivos, cheio, data: Date.now() });
+    // 2. Se marcou CHEIO: o tanque vai para o máximo e calculamos a média real
+    if (cheio) {
+        // CÁLCULO DE MÉDIA ACUMULADA
+        const idxUltimoCheio = db.historico.findIndex(h => h.cheio === true);
+        
+        if (idxUltimoCheio !== -1) {
+            const ultimoCheio = db.historico[idxUltimoCheio];
+            const distTotal = km - ultimoCheio.km;
             
-            document.getElementById('inLitros').value = '';
-            document.getElementById('inCheio').checked = false;
-            render();
+            // Soma todos os abastecimentos parciais feitos desde o último tanque cheio
+            const litrosIntermediarios = db.historico
+                .slice(0, idxUltimoCheio)
+                .reduce((acc, h) => acc + h.litros, 0);
+            
+            const consumoTotalPeriodo = litrosIntermediarios + litrosInput;
+
+            if (distTotal > 0 && consumoTotalPeriodo > 0) {
+                const mediaReal = distTotal / consumoTotalPeriodo;
+                // Ajusta a média sugerida (Peso de 70% para a nova realidade)
+                db.mediaSugerida = (db.mediaSugerida * 0.3) + (mediaReal * 0.7);
+            }
         }
+        
+        // Define que o tanque está cheio agora
+        db.litrosNoTanque = CAP_MAX;
+    } else {
+        // Se for PARCIAL: apenas soma os litros ao que já existia (limitado ao máximo)
+        db.litrosNoTanque = Math.min(CAP_MAX, db.litrosNoTanque + litrosInput);
+    }
+
+    // 3. Salva no histórico exatamente o que foi digitado
+    db.historico.unshift({ 
+        km, 
+        litros: litrosInput, 
+        cheio, 
+        data: Date.now() 
+    });
+    
+    // Limpeza de interface
+    document.getElementById('inLitros').value = '';
+    document.getElementById('inCheio').checked = false;
+    render();
+    alert(cheio ? "Tanque Cheio! Média sincronizada." : "Abastecimento Parcial registrado.");
+}
 
         function atualizarApenasKm() {
             vibrar();
