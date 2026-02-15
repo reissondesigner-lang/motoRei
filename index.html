@@ -3,74 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MotoPanel PRO</title>
+    <title>MotoPanel PRO +</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #0a0a0a; color: #00ff41; font-family: 'Orbitron', sans-serif; }
-        .lcd-panel { background: linear-gradient(145deg, #151515, #0a0a0a); border: 2px solid #333; box-shadow: inset 0 0 20px #000; }
-        .fuel-bar { transition: width 0.5s ease-in-out; }
+        body { background: #050505; color: #00ff41; font-family: 'Orbitron', sans-serif; }
+        .lcd-panel { background: linear-gradient(145deg, #101010, #050505); border: 1px solid #222; box-shadow: inset 0 0 30px #000; }
+        .fuel-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         .blink { animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-        input { font-family: sans-serif; color: white; }
+        @keyframes blinker { 50% { opacity: 0.1; } }
+        input[type="number"] { font-family: sans-serif; color: white; border-radius: 12px; }
+        .history-card { font-family: sans-serif; background: #111; border-left: 3px solid #eab308; }
     </style>
 </head>
-<body class="p-4 flex flex-col min-h-screen">
+<body class="p-4 flex flex-col min-h-screen max-w-md mx-auto">
     
-    <div class="lcd-panel p-6 rounded-3xl mb-6 relative overflow-hidden">
-        <div class="flex justify-between items-start mb-4">
+    <div class="lcd-panel p-5 rounded-[2rem] mb-6 shadow-2xl">
+        <div class="flex justify-between items-start mb-2">
             <div>
-                <span class="text-[10px] text-gray-500 block uppercase">Odômetro Total</span>
-                <span id="dispTotalKm" class="text-3xl font-bold text-white">000000</span> <span class="text-xs">km</span>
+                <span class="text-[9px] text-gray-500 block uppercase tracking-tighter">Total ODO</span>
+                <span id="dispTotalKm" class="text-3xl font-bold text-white leading-none">000000</span> <span class="text-[10px] text-green-500">km</span>
             </div>
             <div class="text-right">
-                <span class="text-[10px] text-gray-500 block uppercase">Média Consumo</span>
-                <span id="dispMedia" class="text-2xl font-bold">0.0</span> <span class="text-xs">km/L</span>
+                <span class="text-[9px] text-gray-500 block uppercase tracking-tighter">Consumo Médio</span>
+                <span id="dispMedia" class="text-2xl font-bold text-yellow-500">0.0</span> <span class="text-[10px]">km/L</span>
             </div>
         </div>
 
-        <div class="mb-6">
-            <div class="flex justify-between text-[10px] mb-1 uppercase tracking-widest">
-                <span>Reserva</span>
-                <span>Tanque</span>
+        <div class="mb-4">
+            <div class="w-full bg-gray-950 h-5 rounded-full border border-gray-800 p-1 flex overflow-hidden">
+                <div id="fuelBar" class="fuel-bar h-full rounded-full bg-green-500 w-0"></div>
             </div>
-            <div class="w-full bg-gray-900 h-6 rounded-sm border border-gray-700 p-1">
-                <div id="fuelBar" class="fuel-bar h-full bg-orange-500 w-0"></div>
-            </div>
-            <div class="flex justify-between mt-1">
-                <span id="dispAutonomia" class="text-sm font-bold">Est: -- km</span>
-                <span id="dispLitros" class="text-sm font-bold text-white">0.0 L</span>
+            <div class="flex justify-between mt-2 items-baseline">
+                <span id="dispAutonomia" class="text-xs font-bold text-gray-400 italic">Autonomia: -- km</span>
+                <span id="dispLitros" class="text-lg font-bold text-white">0.0<span class="text-xs text-gray-500">/4.5L</span></span>
             </div>
         </div>
 
-        <div id="oilPanel" class="border-t border-gray-800 pt-4 flex justify-between items-center">
-            <span class="text-xs uppercase">Próx. Óleo em:</span>
-            <span id="dispOleo" class="text-lg font-bold">--- km</span>
+        <div class="border-t border-gray-900 pt-3 flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-[9px] text-gray-500 uppercase">Óleo vence em:</span>
+                <span id="dispOleo" class="text-sm font-bold">---</span>
+            </div>
+            <div id="oilAlert" class="hidden blink bg-red-950 text-red-500 px-2 py-1 rounded text-[10px] font-bold border border-red-800 uppercase">Trocar Óleo!</div>
         </div>
-        <div id="oilAlert" class="hidden blink text-red-600 text-[10px] font-bold text-center mt-2 uppercase">Trocar Óleo Imediatamente!</div>
     </div>
 
-    <div class="space-y-4 flex-grow">
-        <div class="grid grid-cols-1 gap-3">
-            <input type="number" id="inKm" placeholder="KM Atual" class="bg-gray-800 p-4 rounded-xl border border-gray-700 w-full outline-none focus:border-orange-500">
-            
-            <div class="flex gap-2">
-                <input type="number" id="inLitros" placeholder="Litros" class="bg-gray-800 p-4 rounded-xl border border-gray-700 w-2/3 outline-none focus:border-orange-500">
-                <label class="flex flex-col items-center justify-center bg-gray-800 rounded-xl border border-gray-700 px-3 w-1/3 text-[10px] uppercase">
-                    <span>Cheio?</span>
-                    <input type="checkbox" id="inCheio" class="mt-1 w-6 h-6">
-                </label>
-            </div>
+    <div class="grid grid-cols-1 gap-3 mb-6">
+        <div class="grid grid-cols-2 gap-2">
+            <input type="number" id="inKm" placeholder="KM Atual" class="bg-gray-900 p-4 border border-gray-800 outline-none focus:border-green-600">
+            <input type="number" id="inLitros" placeholder="Litros" class="bg-gray-900 p-4 border border-gray-800 outline-none focus:border-orange-600">
+        </div>
+        
+        <div class="flex gap-2">
+            <label class="flex flex-1 items-center justify-center bg-gray-900 rounded-xl border border-gray-800 p-3 select-none active:bg-gray-800">
+                <span class="text-xs mr-3 uppercase text-gray-400">Enchi o tanque?</span>
+                <input type="checkbox" id="inCheio" class="w-6 h-6 rounded accent-green-600">
+            </label>
+            <button onclick="handleAction('abastecer')" class="flex-1 bg-orange-600 text-white font-bold rounded-xl uppercase text-xs">Abastecer</button>
         </div>
 
-        <div class="grid grid-cols-1 gap-2">
-            <button onclick="updateKm()" class="bg-gray-200 text-black font-bold p-4 rounded-xl uppercase text-sm">Atualizar KM</button>
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="abastecer()" class="bg-orange-600 text-white font-bold p-4 rounded-xl uppercase text-sm">Abasteci</button>
-                <button onclick="trocarOleo()" class="bg-blue-700 text-white font-bold p-4 rounded-xl uppercase text-sm leading-tight text-xs">Troquei<br>Óleo</button>
-            </div>
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="handleAction('km')" class="bg-gray-800 text-gray-300 font-bold p-3 rounded-xl uppercase text-[10px]">Apenas Atualizar KM</button>
+            <button onclick="handleAction('oleo')" class="bg-blue-800 text-white font-bold p-3 rounded-xl uppercase text-[10px]">Troquei Óleo</button>
         </div>
+    </div>
+
+    <div class="flex-grow">
+        <h3 class="text-[10px] text-gray-500 uppercase mb-2 tracking-widest px-1">Últimos Abastecimentos</h3>
+        <div id="historico" class="space-y-2">
+            </div>
     </div>
 
     <script>
@@ -79,88 +82,129 @@
         const INT_OLEO_DIAS = 90;
 
         let db = JSON.parse(localStorage.getItem('motoDB')) || {
-            km: 0, 
-            kmOleo: 0, 
-            dataOleo: Date.now(), 
-            litros: 0, 
-            totalKmPercorrido: 0, 
-            totalLitrosConsumidos: 0
+            km: 0,
+            kmOleo: 0,
+            dataOleo: Date.now(),
+            litrosNoTanque: 0,
+            historico: [], // {km, litros, cheio, data}
+            mediaSugerida: 35
         };
 
         function render() {
+            // Update Odometro
             document.getElementById('dispTotalKm').innerText = Math.floor(db.km).toString().padStart(6, '0');
             
-            // Óleo
+            // Lógica de Óleo
             const kmRestante = INT_OLEO_KM - (db.km - db.kmOleo);
-            const diasRestantes = Math.ceil((db.dataOleo + (INT_OLEO_DIAS * 86400000) - Date.now()) / 86400000);
+            const diasVencimento = db.dataOleo + (INT_OLEO_DIAS * 86400000);
+            const diasRestantes = Math.ceil((diasVencimento - Date.now()) / 86400000);
             
             const oilText = document.getElementById('dispOleo');
-            oilText.innerText = `${kmRestante} km / ${diasRestantes}d`;
+            oilText.innerText = `${kmRestante} km ou ${diasRestantes} dias`;
             
             if (kmRestante <= 0 || diasRestantes <= 0) {
-                oilText.classList.add('text-red-600');
+                oilText.className = "text-sm font-bold text-red-500";
                 document.getElementById('oilAlert').classList.remove('hidden');
             } else {
-                oilText.classList.remove('text-red-600');
+                oilText.className = "text-sm font-bold text-green-500";
                 document.getElementById('oilAlert').classList.add('hidden');
             }
 
-            // Combustível
-            const perc = (db.litros / CAP_MAX) * 100;
+            // Média de Consumo (Baseada nos últimos 3 abastecimentos 'Cheios')
+            const abastecimentosCheios = db.historico.filter(h => h.cheio);
+            if (abastecimentosCheios.length >= 2) {
+                let somaMedias = 0;
+                let cont = 0;
+                for (let i = 0; i < Math.min(abastecimentosCheios.length - 1, 3); i++) {
+                    const atual = abastecimentosCheios[i];
+                    const anterior = abastecimentosCheios[i+1];
+                    const dist = atual.km - anterior.km;
+                    if (dist > 0 && atual.litros > 0) {
+                        somaMedias += (dist / atual.litros);
+                        cont++;
+                    }
+                }
+                if (cont > 0) db.mediaSugerida = somaMedias / cont;
+            }
+            document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
+
+            // Combustível e Autonomia
+            const perc = (db.litrosNoTanque / CAP_MAX) * 100;
             const bar = document.getElementById('fuelBar');
             bar.style.width = `${Math.min(perc, 100)}%`;
-            bar.className = `fuel-bar h-full ${perc < 25 ? 'bg-red-600 blink' : 'bg-orange-500'}`;
+            bar.className = `fuel-bar h-full rounded-full ${perc < 25 ? 'bg-red-600 blink' : (perc < 50 ? 'bg-yellow-500' : 'bg-green-600')}`;
             
-            document.getElementById('dispLitros').innerText = `${db.litros.toFixed(1)} L`;
-            
-            const media = db.totalLitrosConsumidos > 0 ? (db.totalKmPercorrido / db.totalLitrosConsumidos) : 35;
-            document.getElementById('dispMedia').innerText = media.toFixed(1);
-            document.getElementById('dispAutonomia').innerText = `Est: ${(db.litros * media).toFixed(0)} km`;
-            
+            document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(1);
+            document.getElementById('dispAutonomia').innerText = `Autonomia: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
+
+            // Render Histórico
+            const histContainer = document.getElementById('historico');
+            histContainer.innerHTML = db.historico.slice(0, 5).map(h => `
+                <div class="history-card p-3 rounded-lg flex justify-between items-center text-white">
+                    <div>
+                        <div class="text-[10px] text-gray-500">${new Date(h.data).toLocaleDateString()}</div>
+                        <div class="text-sm font-bold">${h.km} km</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-orange-400">${h.litros.toFixed(2)}L ${h.cheio ? '<b>(Cheio)</b>' : ''}</div>
+                        <div class="text-[10px] text-gray-500">Média: ${(h.consumoInst || 0).toFixed(1)} km/L</div>
+                    </div>
+                </div>
+            `).join('');
+
             localStorage.setItem('motoDB', JSON.stringify(db));
         }
 
-        function updateKm() {
-            const novoKm = parseFloat(document.getElementById('inKm').value);
-            if (!novoKm || novoKm < db.km) return alert("KM inválido!");
-            
-            const diff = novoKm - db.km;
-            const media = db.totalLitrosConsumidos > 0 ? (db.totalKmPercorrido / db.totalLitrosConsumidos) : 35;
-            
-            db.litros = Math.max(0, db.litros - (diff / media));
-            db.km = novoKm;
-            render();
-            alert("KM Atualizado!");
-        }
+        function handleAction(tipo) {
+            const inputKm = parseFloat(document.getElementById('inKm').value);
+            const inputLitros = parseFloat(document.getElementById('inLitros').value) || 0;
+            const isCheio = document.getElementById('inCheio').checked;
 
-        function abastecer() {
-            const litros = parseFloat(document.getElementById('inLitros').value);
-            const cheio = document.getElementById('inCheio').checked;
-            
-            if (cheio) {
-                db.litros = CAP_MAX;
-            } else if (litros) {
-                db.litros = Math.min(CAP_MAX, db.litros + litros);
-            } else {
-                return alert("Informe os litros ou marque 'Cheio'");
-            }
+            if (!inputKm) return alert("Por favor, insira o KM atual.");
+            if (inputKm < db.km) return alert("O KM não pode ser menor que o atual!");
 
-            // Para cálculo de média simplificado
+            // Consumo de combustível desde a última atualização
+            const distanciaPercorrida = inputKm - db.km;
             if (db.km > 0) {
-                db.totalKmPercorrido += 10; // Logica simplificada de incremento
-                db.totalLitrosConsumidos += (litros || 1);
+                db.litrosNoTanque = Math.max(0, db.litrosNoTanque - (distanciaPercorrida / db.mediaSugerida));
             }
+            db.km = inputKm;
+
+            if (tipo === 'abastecer') {
+                if (!inputLitros && !isCheio) return alert("Insira os litros ou marque tanque cheio.");
+                
+                let litrosEfetivos = inputLitros;
+                if (isCheio) {
+                    litrosEfetivos = CAP_MAX - db.litrosNoTanque;
+                    db.litrosNoTanque = CAP_MAX;
+                } else {
+                    db.litrosNoTanque = Math.min(CAP_MAX, db.litrosNoTanque + inputLitros);
+                }
+
+                // Cálculo de consumo instantâneo para o histórico
+                let consumoInst = 0;
+                if (db.historico.length > 0) {
+                    consumoInst = (inputKm - db.historico[0].km) / (litrosEfetivos || 1);
+                }
+
+                db.historico.unshift({
+                    km: inputKm,
+                    litros: litrosEfetivos,
+                    cheio: isCheio,
+                    data: Date.now(),
+                    consumoInst: consumoInst
+                });
+            } else if (tipo === 'oleo') {
+                db.kmOleo = inputKm;
+                db.dataOleo = Date.now();
+                alert("Troca de óleo registrada!");
+            }
+
+            // Limpa inputs
+            document.getElementById('inLitros').value = '';
+            document.getElementById('inCheio').checked = false;
             
             render();
-            alert("Abastecimento registrado!");
-        }
-
-        function trocarOleo() {
-            if(confirm("Confirma troca de óleo hoje?")) {
-                db.kmOleo = db.km;
-                db.dataOleo = Date.now();
-                render();
-            }
         }
 
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
