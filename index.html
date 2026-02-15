@@ -29,7 +29,7 @@
             background-size: 100% 4px; pointer-events: none; z-index: 10;
         }
 
-        /* Odômetro Estilo Painel Moto */
+        /* Odômetro */
         .odo-container { display: flex; align-items: baseline; gap: 2px; }
         .val-main { color: #fff; font-size: 1.8rem; font-weight: 700; }
         .val-meters { color: #000; background: #fff; padding: 0 4px; border-radius: 2px; font-size: 1.5rem; font-weight: 700; margin-left: 4px; }
@@ -39,19 +39,25 @@
         .fuel-bar-container { width: 100%; background: #000; height: 12px; border-radius: 2px; border: 1px solid #1a1a1a; margin: 10px 0; overflow: hidden; padding: 2px; }
         .fuel-bar { height: 100%; border-radius: 1px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; }
+        /* Grid Unificado para Inputs e Botões */
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+        
         input { 
             background: #0a0a0a; color: #fff; border: 1px solid #1a1a1a; padding: 1rem; 
-            border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 13px; text-align: center; outline: none;
+            border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 13px; text-align: center; outline: none; width: 100%;
         }
         input:focus { border-color: var(--neon-green); }
 
-        button { background: #111; color: #ccc; border: 1px solid #222; padding: 1rem; border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; }
+        button { 
+            background: #111; color: #ccc; border: 1px solid #222; padding: 1rem; 
+            border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 9px; 
+            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; width: 100%;
+        }
         button:active { transform: scale(0.97); background: #1a1a1a; }
-        .btn-abastecer { background: #ea580c; color: #fff; border: none; font-size: 11px; font-weight: 700; grid-column: span 1; }
+        .btn-abastecer { background: #ea580c; color: #fff; border: none; font-size: 11px; font-weight: 700; }
         
         .checkbox-container { display: flex; align-items: center; justify-content: center; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 0.5rem; padding: 0.5rem; }
-        input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--neon-green); margin-left: 8px; }
+        input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--neon-green); margin-left: 8px; cursor: pointer; }
 
         .history-card { background: #080808; border-left: 2px solid var(--neon-green); padding: 0.75rem; border-radius: 0.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
         .history-info { font-family: sans-serif; font-size: 11px; color: #eee; }
@@ -68,7 +74,7 @@
             <div>
                 <p class="label-futuristic">Odômetro Total</p>
                 <div class="odo-container">
-                    <span id="dispTotalKm" class="val-main">000.000</span>
+                    <span id="dispTotalKm" class="val-main">00.000</span>
                     <span id="dispMeters" class="val-meters">0</span>
                     <span class="unit">km</span>
                 </div>
@@ -83,20 +89,28 @@
             <div id="fuelBar" class="fuel-bar" style="width: 0%; background: var(--neon-green);"></div>
         </div>
         
-        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
             <span id="dispAutonomia" class="label-futuristic" style="color: #888;">Est: -- km</span>
             <span id="dispLitros" style="color: #fff; font-size: 14px; font-weight: 700;">
                 0.00<span style="color: #444; font-size: 10px;"> / 4.50L</span>
             </span>
         </div>
+
+        <div style="padding-top: 0.75rem; border-top: 1px solid #151515; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p class="label-futuristic">Próx. Óleo em</p>
+                <span id="dispOleo" style="color: #fff; font-size: 11px; font-weight: 700;">--- km</span>
+            </div>
+            <div id="oilAlert" class="blink" style="display: none; background: #450a0a; color: #f87171; font-size: 8px; padding: 2px 6px; border: 1px solid #7f1d1d; border-radius: 2px; font-weight: 700;">REVISÃO!</div>
+        </div>
     </div>
 
-    <div class="input-group">
+    <div class="control-grid">
         <input type="number" step="0.1" inputmode="decimal" id="inKm" placeholder="KM ATUAL">
         <input type="number" step="0.01" inputmode="decimal" id="inLitros" placeholder="LITROS">
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+    <div class="control-grid">
         <div class="checkbox-container">
             <span class="label-futuristic">Cheio?</span>
             <input type="checkbox" id="inCheio">
@@ -104,7 +118,7 @@
         <button onclick="abastecer()" class="btn-abastecer">Abastecer</button>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+    <div class="control-grid" style="margin-bottom: 1.5rem;">
         <button onclick="atualizarApenasKm()">Sync KM</button>
         <button onclick="trocarOleo()" style="border-color: #1e3a8a;">Trocar Óleo</button>
     </div>
@@ -112,9 +126,10 @@
     <div class="flex-grow">
         <p class="label-futuristic" style="margin-bottom: 0.5rem;">System Log_Abastecimentos</p>
         <div id="historico"></div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 2rem;">
-            <button onclick="exportarBackup()" style="font-size: 7px; opacity: 0.5;">Exportar</button>
-            <button onclick="document.getElementById('fileInput').click()" style="font-size: 7px; opacity: 0.5;">Importar</button>
+        
+        <div class="control-grid" style="margin-top: 2rem; opacity: 0.5;">
+            <button onclick="exportarBackup()" style="font-size: 7px; padding: 0.5rem;">Exportar</button>
+            <button onclick="document.getElementById('fileInput').click()" style="font-size: 7px; padding: 0.5rem;">Importar</button>
             <input type="file" id="fileInput" style="display: none;" onchange="importarBackup(event)">
         </div>
     </div>
@@ -130,20 +145,21 @@
         function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
 
         function render() {
-            // Formatação Odômetro (Milhares.Centenas [Metros])
-            const totalFixo = db.km.toFixed(1); // Ex: 1250.7
+            // Odômetro com Metros
+            const totalFixo = db.km.toFixed(1);
             const partes = totalFixo.split('.');
             const kmPrincipal = Math.floor(partes[0]).toLocaleString('pt-BR', { minimumIntegerDigits: 5 });
             const metros = partes[1] || "0";
-
             document.getElementById('dispTotalKm').innerText = kmPrincipal;
             document.getElementById('dispMeters').innerText = metros;
             
-            // Óleo
-            const kmRest = INT_OLEO_KM - (db.km - db.kmOleo);
-            document.getElementById('dispAutonomia').innerText = `Est: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
+            // Lógica de Óleo
+            const kmPercorridoDesdeTroca = db.km - db.kmOleo;
+            const kmFaltando = INT_OLEO_KM - kmPercorridoDesdeTroca;
+            document.getElementById('dispOleo').innerText = `${kmFaltando.toFixed(1)} km`;
+            document.getElementById('oilAlert').style.display = (kmFaltando <= 0) ? 'block' : 'none';
 
-            // Combustível
+            // Autonomia e Barra
             const perc = (db.litrosNoTanque / CAP_MAX) * 100;
             const bar = document.getElementById('fuelBar');
             bar.style.width = Math.min(perc, 100) + '%';
@@ -151,7 +167,9 @@
             
             document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(2);
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
+            document.getElementById('dispAutonomia').innerText = `Est: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
 
+            // Histórico
             const histContainer = document.getElementById('historico');
             histContainer.innerHTML = db.historico.slice(0, 5).map(h => `
                 <div class="history-card">
@@ -185,11 +203,8 @@
 
             if (!km || km < db.km) return alert("KM Inválido.");
 
-            // Desconta o consumo do trajeto antes de adicionar
             atualizarConsumo(km);
 
-            // LOGICA AUTOMÁTICA DE CHEIO:
-            // Se marcou 'cheio' mas não informou litros, o sistema calcula quanto faltava
             if (cheio && litrosInput === 0) {
                 litrosInput = CAP_MAX - db.litrosNoTanque;
             }
@@ -203,10 +218,8 @@
                     const distTotal = km - ultimoCheio.km;
                     const litrosParciais = db.historico.slice(0, idxUltimoCheio).reduce((acc, h) => acc + h.litros, 0);
                     const consumoTotal = litrosParciais + litrosInput;
-
                     if (distTotal > 0 && consumoTotal > 0) {
-                        const mediaReal = distTotal / consumoTotal;
-                        db.mediaSugerida = (db.mediaSugerida * 0.3) + (mediaReal * 0.7);
+                        db.mediaSugerida = (db.mediaSugerida * 0.3) + ((distTotal / consumoTotal) * 0.7);
                     }
                 }
                 db.litrosNoTanque = CAP_MAX;
@@ -215,6 +228,7 @@
             }
 
             db.historico.unshift({ km, litros: litrosInput, cheio, data: Date.now() });
+            document.getElementById('inKm').value = '';
             document.getElementById('inLitros').value = '';
             document.getElementById('inCheio').checked = false;
             render();
@@ -222,7 +236,7 @@
 
         function atualizarApenasKm() {
             const km = parseFloat(document.getElementById('inKm').value);
-            if (km >= db.km) { atualizarConsumo(km); render(); vibrar(); }
+            if (km >= db.km) { atualizarConsumo(km); document.getElementById('inKm').value = ''; render(); vibrar(); }
         }
 
         function trocarOleo() {
@@ -243,10 +257,6 @@
         }
 
         render();
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(e => console.error(e));
-        }
     </script>
 </body>
 </html>
