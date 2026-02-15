@@ -7,72 +7,38 @@
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset e Base Futurista */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        :root {
-            --neon-green: #00ff41;
-            --dark-bg: #050505;
-            --panel-bg: #0c0c0c;
-            --text-gray: #555;
-            --warning-red: #dc2626;
-        }
+        :root { --neon-green: #00ff41; --dark-bg: #050505; --text-gray: #555; --warning-red: #dc2626; }
 
         body { 
-            background: var(--dark-bg); 
-            color: var(--neon-green); 
-            font-family: 'Orbitron', sans-serif; 
-            padding: 1rem; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
-            max-width: 28rem; 
-            margin: 0 auto;
+            background: var(--dark-bg); color: var(--neon-green); font-family: 'Orbitron', sans-serif; 
+            padding: 1rem; display: flex; flex-direction: column; min-height: 100vh; max-width: 28rem; margin: 0 auto;
         }
 
-        /* Labels e Textos Auxiliares */
-        .label-futuristic {
-            font-size: 8px;
-            color: var(--text-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            font-weight: 700;
-        }
+        .label-futuristic { font-size: 8px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; }
 
-        /* Painel LCD Principal */
+        /* Painel LCD */
         .lcd-panel { 
-            background: linear-gradient(145deg, #0f0f0f, #050505); 
-            border: 1px solid #1a1a1a; 
-            padding: 1.5rem; 
-            border-radius: 1.5rem; 
-            margin-bottom: 1.5rem;
-            box-shadow: inset 0 0 20px #000;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(145deg, #0f0f0f, #050505); border: 1px solid #1a1a1a; 
+            padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: inset 0 0 20px #000;
+            position: relative; overflow: hidden;
         }
-
         .lcd-panel::after {
             content: ""; display: block; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 10;
+            background-size: 100% 4px; pointer-events: none; z-index: 10;
         }
 
-        /* Tipografia de Dados */
-        .val-main { color: #fff; font-size: 1.8rem; font-weight: 700; line-height: 1; }
-        .val-sub { color: #eab308; font-size: 1.5rem; font-weight: 700; line-height: 1; }
+        /* Odômetro Estilo Painel Moto */
+        .odo-container { display: flex; align-items: baseline; gap: 2px; }
+        .val-main { color: #fff; font-size: 1.8rem; font-weight: 700; }
+        .val-meters { color: #000; background: #fff; padding: 0 4px; border-radius: 2px; font-size: 1.5rem; font-weight: 700; margin-left: 4px; }
+        .val-sub { color: #eab308; font-size: 1.5rem; font-weight: 700; }
         .unit { font-size: 9px; color: var(--text-gray); margin-left: 2px; text-transform: uppercase; }
 
-        /* Barra de Combustível */
-        .fuel-bar-container { 
-            width: 100%; background: #000; height: 12px; 
-            border-radius: 2px; border: 1px solid #1a1a1a; 
-            margin: 10px 0; overflow: hidden; padding: 2px;
-        }
+        .fuel-bar-container { width: 100%; background: #000; height: 12px; border-radius: 2px; border: 1px solid #1a1a1a; margin: 10px 0; overflow: hidden; padding: 2px; }
         .fuel-bar { height: 100%; border-radius: 1px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* Inputs e Botões */
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; }
         input { 
             background: #0a0a0a; color: #fff; border: 1px solid #1a1a1a; padding: 1rem; 
@@ -80,28 +46,14 @@
         }
         input:focus { border-color: var(--neon-green); }
 
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem; }
-        button { 
-            background: #111; color: #ccc; border: 1px solid #222; padding: 1rem; 
-            border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 9px;
-            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
-        }
+        button { background: #111; color: #ccc; border: 1px solid #222; padding: 1rem; border-radius: 0.5rem; font-family: 'Orbitron', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; }
         button:active { transform: scale(0.97); background: #1a1a1a; }
-        .btn-abastecer { background: #ea580c; color: #fff; border: none; font-size: 11px; font-weight: 700; }
-
-        /* Estilo Checkbox customizado */
-        .checkbox-container {
-            display: flex; align-items: center; justify-content: center; background: #0a0a0a;
-            border: 1px solid #1a1a1a; border-radius: 0.5rem; padding: 0.5rem;
-        }
+        .btn-abastecer { background: #ea580c; color: #fff; border: none; font-size: 11px; font-weight: 700; grid-column: span 1; }
+        
+        .checkbox-container { display: flex; align-items: center; justify-content: center; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 0.5rem; padding: 0.5rem; }
         input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--neon-green); margin-left: 8px; }
 
-        /* Histórico Terminal */
-        .history-card { 
-            background: #080808; border-left: 2px solid var(--neon-green); 
-            padding: 0.75rem; border-radius: 0.25rem; display: flex; 
-            justify-content: space-between; align-items: center; margin-bottom: 0.5rem;
-        }
+        .history-card { background: #080808; border-left: 2px solid var(--neon-green); padding: 0.75rem; border-radius: 0.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
         .history-info { font-family: sans-serif; font-size: 11px; color: #eee; }
         .history-meta { font-size: 8px; color: var(--text-gray); text-transform: uppercase; }
 
@@ -114,8 +66,12 @@
     <div class="lcd-panel">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
             <div>
-                <p class="label-futuristic">Total ODO</p>
-                <span id="dispTotalKm" class="val-main">000.000</span><span class="unit">km</span>
+                <p class="label-futuristic">Odômetro Total</p>
+                <div class="odo-container">
+                    <span id="dispTotalKm" class="val-main">000.000</span>
+                    <span id="dispMeters" class="val-meters">0</span>
+                    <span class="unit">km</span>
+                </div>
             </div>
             <div style="text-align: right;">
                 <p class="label-futuristic">Média Real</p>
@@ -130,25 +86,17 @@
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
             <span id="dispAutonomia" class="label-futuristic" style="color: #888;">Est: -- km</span>
             <span id="dispLitros" style="color: #fff; font-size: 14px; font-weight: 700;">
-                0.0<span style="color: #444; font-size: 10px;"> / 4.5L</span>
+                0.00<span style="color: #444; font-size: 10px;"> / 4.50L</span>
             </span>
-        </div>
-
-        <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #151515; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <p class="label-futuristic">Próx. Óleo</p>
-                <span id="dispOleo" style="color: #fff; font-size: 11px;">---</span>
-            </div>
-            <div id="oilAlert" class="blink" style="display: none; background: #450a0a; color: #f87171; font-size: 8px; padding: 2px 6px; border: 1px solid #7f1d1d; border-radius: 2px; font-weight: 700;">REVISÃO!</div>
         </div>
     </div>
 
     <div class="input-group">
-        <input type="number" inputmode="decimal" id="inKm" placeholder="KM ATUAL">
-        <input type="number" inputmode="decimal" id="inLitros" placeholder="LITROS">
+        <input type="number" step="0.1" inputmode="decimal" id="inKm" placeholder="KM ATUAL">
+        <input type="number" step="0.01" inputmode="decimal" id="inLitros" placeholder="LITROS">
     </div>
 
-    <div class="btn-row">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
         <div class="checkbox-container">
             <span class="label-futuristic">Cheio?</span>
             <input type="checkbox" id="inCheio">
@@ -156,27 +104,24 @@
         <button onclick="abastecer()" class="btn-abastecer">Abastecer</button>
     </div>
 
-    <div class="btn-row">
-        <button onclick="atualizarApenasKm()">Sincronizar KM</button>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <button onclick="atualizarApenasKm()">Sync KM</button>
         <button onclick="trocarOleo()" style="border-color: #1e3a8a;">Trocar Óleo</button>
     </div>
 
     <div class="flex-grow">
         <p class="label-futuristic" style="margin-bottom: 0.5rem;">System Log_Abastecimentos</p>
         <div id="historico"></div>
-        
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 2rem;">
-            <button onclick="exportarBackup()" style="font-size: 7px; opacity: 0.5;">Exportar Data</button>
-            <button onclick="document.getElementById('fileInput').click()" style="font-size: 7px; opacity: 0.5;">Importar Data</button>
+            <button onclick="exportarBackup()" style="font-size: 7px; opacity: 0.5;">Exportar</button>
+            <button onclick="document.getElementById('fileInput').click()" style="font-size: 7px; opacity: 0.5;">Importar</button>
             <input type="file" id="fileInput" style="display: none;" onchange="importarBackup(event)">
         </div>
-        <button onclick="limparDados()" style="width: 100%; background: transparent; border: none; color: #333; font-size: 7px; margin-top: 1rem; padding-bottom: 2rem;">Reset_Factory_Defaults</button>
     </div>
 
     <script>
         const CAP_MAX = 4.5;
         const INT_OLEO_KM = 1000;
-        const INT_OLEO_DIAS = 90;
 
         let db = JSON.parse(localStorage.getItem('motoDB_v2')) || {
             km: 0, kmOleo: 0, dataOleo: Date.now(), litrosNoTanque: 0, historico: [], mediaSugerida: 35
@@ -185,30 +130,28 @@
         function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
 
         function render() {
-            // KM formatado com separador de milhar
-            document.getElementById('dispTotalKm').innerText = Math.floor(db.km).toLocaleString('pt-BR', { minimumIntegerDigits: 6 });
+            // Formatação Odômetro (Milhares.Centenas [Metros])
+            const totalFixo = db.km.toFixed(1); // Ex: 1250.7
+            const partes = totalFixo.split('.');
+            const kmPrincipal = Math.floor(partes[0]).toLocaleString('pt-BR', { minimumIntegerDigits: 5 });
+            const metros = partes[1] || "0";
+
+            document.getElementById('dispTotalKm').innerText = kmPrincipal;
+            document.getElementById('dispMeters').innerText = metros;
             
             // Óleo
             const kmRest = INT_OLEO_KM - (db.km - db.kmOleo);
-            const diasRest = Math.ceil((db.dataOleo + (INT_OLEO_DIAS * 86400000) - Date.now()) / 86400000);
-            document.getElementById('dispOleo').innerText = `${kmRest} km / ${diasRest} dias`;
-            document.getElementById('oilAlert').style.display = (kmRest <= 0 || diasRest <= 0) ? 'block' : 'none';
+            document.getElementById('dispAutonomia').innerText = `Est: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
 
             // Combustível
             const perc = (db.litrosNoTanque / CAP_MAX) * 100;
             const bar = document.getElementById('fuelBar');
             bar.style.width = Math.min(perc, 100) + '%';
             bar.style.backgroundColor = perc < 20 ? 'var(--warning-red)' : 'var(--neon-green)';
-            if(perc < 20) bar.classList.add('blink'); else bar.classList.remove('blink');
             
-            document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(1);
+            document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(2);
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
-            
-            // Estimativa de Autonomia Real
-            const autonomia = db.litrosNoTanque * db.mediaSugerida;
-            document.getElementById('dispAutonomia').innerText = `Est: ${autonomia.toFixed(0)} km`;
 
-            // Histórico
             const histContainer = document.getElementById('historico');
             histContainer.innerHTML = db.historico.slice(0, 5).map(h => `
                 <div class="history-card">
@@ -218,7 +161,7 @@
                     </div>
                     <div style="text-align: right;">
                         <p style="color: #eab308; font-weight: 700; font-size: 12px;">${h.litros.toFixed(2)}L</p>
-                        <p class="history-meta">${h.cheio ? 'Tanque Cheio' : 'Parcial'}</p>
+                        <p class="history-meta">${h.cheio ? 'Cheio' : 'Parcial'}</p>
                     </div>
                 </div>
             `).join('');
@@ -229,132 +172,80 @@
         function atualizarConsumo(novoKm) {
             if (db.km > 0 && novoKm > db.km) {
                 const distancia = novoKm - db.km;
-                // Reduz o combustível baseado no consumo real
                 db.litrosNoTanque = Math.max(0, db.litrosNoTanque - (distancia / db.mediaSugerida));
             }
             db.km = novoKm;
         }
 
-      function abastecer() {
-    vibrar(60);
-    const km = parseFloat(document.getElementById('inKm').value);
-    const litrosInput = parseFloat(document.getElementById('inLitros').value) || 0;
-    const cheio = document.getElementById('inCheio').checked;
+        function abastecer() {
+            vibrar(60);
+            const km = parseFloat(document.getElementById('inKm').value);
+            let litrosInput = parseFloat(document.getElementById('inLitros').value) || 0;
+            const cheio = document.getElementById('inCheio').checked;
 
-    if (!km || km < db.km) return alert("Erro: KM Inválido.");
-    if (litrosInput <= 0) return alert("Erro: Informe os litros.");
+            if (!km || km < db.km) return alert("KM Inválido.");
 
-    // 1. O KM atual vira a nova referência de odômetro
-    const kmPercorridoDesdeUltimoRegistro = km - db.km;
-    db.km = km;
+            // Desconta o consumo do trajeto antes de adicionar
+            atualizarConsumo(km);
 
-    if (cheio) {
-        // --- LÓGICA DE MÉDIA REAL ---
-        // Procuramos o último evento de "Tanque Cheio" no histórico
-        const idxUltimoCheio = db.historico.findIndex(h => h.cheio === true);
-
-        if (idxUltimoCheio !== -1) {
-            const ultimoCheio = db.historico[idxUltimoCheio];
-            const distanciaTotal = km - ultimoCheio.km;
-            
-            // Somamos todos os litros colocados de forma parcial entre o último 'cheio' e agora
-            // O slice(0, idxUltimoCheio) pega todos os registros mais recentes que o último 'cheio'
-            const litrosDosParciais = db.historico
-                .slice(0, idxUltimoCheio)
-                .reduce((acc, h) => acc + h.litros, 0);
-            
-            const totalCombustivelConsumido = litrosDosParciais + litrosInput;
-
-            if (distanciaTotal > 0 && totalCombustivelConsumido > 0) {
-                const mediaDestePeriodo = distanciaTotal / totalCombustivelConsumido;
-                
-                // Aplicamos a média ponderada para evitar oscilações bruscas
-                // 30% da média histórica + 70% da média real deste trajeto
-                db.mediaSugerida = (db.mediaSugerida * 0.3) + (mediaDestePeriodo * 0.7);
+            // LOGICA AUTOMÁTICA DE CHEIO:
+            // Se marcou 'cheio' mas não informou litros, o sistema calcula quanto faltava
+            if (cheio && litrosInput === 0) {
+                litrosInput = CAP_MAX - db.litrosNoTanque;
             }
-        }
-        
-        // Como você encheu, o sistema reseta o nível do tanque para o máximo
-        db.litrosNoTanque = CAP_MAX;
-        alert("Tanque Cheio! Média Recalculada.");
-    } else {
-        // --- LÓGICA PARCIAL ---
-        // Apenas somamos os litros ao que o sistema estima que ainda tem
-        // Primeiro, descontamos o que o sistema acha que gastou no trajeto
-        const consumoEstimadoNoTrajeto = kmPercorridoDesdeUltimoRegistro / db.mediaSugerida;
-        db.litrosNoTanque = Math.max(0, db.litrosNoTanque - consumoEstimadoNoTrajeto);
-        
-        // Agora somamos o que entrou na bomba
-        db.litrosNoTanque = Math.min(CAP_MAX, db.litrosNoTanque + litrosInput);
-        alert("Abastecimento Parcial Salvo.");
-    }
 
-    // 2. Registra no histórico (essencial para o próximo cálculo de média)
-    db.historico.unshift({ 
-        km: km, 
-        litros: litrosInput, 
-        cheio: cheio, 
-        data: Date.now() 
-    });
-    
-    // 3. Limpa os campos e atualiza o painel
-    document.getElementById('inLitros').value = '';
-    document.getElementById('inCheio').checked = false;
-    render();
-}
+            if (litrosInput <= 0 && !cheio) return alert("Informe os litros.");
+
+            if (cheio) {
+                const idxUltimoCheio = db.historico.findIndex(h => h.cheio === true);
+                if (idxUltimoCheio !== -1) {
+                    const ultimoCheio = db.historico[idxUltimoCheio];
+                    const distTotal = km - ultimoCheio.km;
+                    const litrosParciais = db.historico.slice(0, idxUltimoCheio).reduce((acc, h) => acc + h.litros, 0);
+                    const consumoTotal = litrosParciais + litrosInput;
+
+                    if (distTotal > 0 && consumoTotal > 0) {
+                        const mediaReal = distTotal / consumoTotal;
+                        db.mediaSugerida = (db.mediaSugerida * 0.3) + (mediaReal * 0.7);
+                    }
+                }
+                db.litrosNoTanque = CAP_MAX;
+            } else {
+                db.litrosNoTanque = Math.min(CAP_MAX, db.litrosNoTanque + litrosInput);
+            }
+
+            db.historico.unshift({ km, litros: litrosInput, cheio, data: Date.now() });
+            document.getElementById('inLitros').value = '';
+            document.getElementById('inCheio').checked = false;
+            render();
+        }
 
         function atualizarApenasKm() {
-            vibrar();
             const km = parseFloat(document.getElementById('inKm').value);
-            if (km && km >= db.km) { 
-                atualizarConsumo(km); 
-                render(); 
-                alert("KM Sincronizado!");
-            }
+            if (km >= db.km) { atualizarConsumo(km); render(); vibrar(); }
         }
 
         function trocarOleo() {
             vibrar(100);
             const km = parseFloat(document.getElementById('inKm').value) || db.km;
-            if(confirm("Confirmar troca de óleo no KM " + km + "?")) {
-                db.kmOleo = km;
-                db.dataOleo = Date.now();
-                render();
-            }
+            if(confirm("Trocar óleo no KM " + km + "?")) { db.kmOleo = km; render(); }
         }
 
         function exportarBackup() {
-            const blob = new Blob([JSON.stringify(db)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `motopanel_backup_${new Date().getTime()}.json`;
-            a.click();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "moto.json"); dl.click();
         }
 
         function importarBackup(e) {
             const reader = new FileReader();
-            reader.onload = (ev) => {
-                try {
-                    db = JSON.parse(ev.target.result);
-                    render();
-                    alert("Dados importados com sucesso!");
-                } catch(err) { alert("Arquivo inválido."); }
-            };
+            reader.onload = (ev) => { db = JSON.parse(ev.target.result); render(); alert("Importado!"); };
             reader.readAsText(e.target.files[0]);
-        }
-
-        function limparDados() {
-            if(confirm("ATENÇÃO: Apagar todos os dados permanentemente?")) {
-                localStorage.removeItem('motoDB_v2');
-                location.reload();
-            }
         }
 
         render();
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
+            navigator.serviceWorker.register('sw.js').catch(e => console.error(e));
         }
     </script>
 </body>
