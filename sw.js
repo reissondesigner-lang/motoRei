@@ -1,9 +1,10 @@
-const CACHE_NAME = 'motohealth-v1';
+const CACHE_NAME = 'moto-panel-v1';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  'https://cdn.tailwindcss.com'
+  'https://cdn.tailwindcss.com',
+  'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap'
 ];
 
 self.addEventListener('install', (e) => {
@@ -11,7 +12,5 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
-  );
+  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
 });
