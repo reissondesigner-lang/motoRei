@@ -120,7 +120,11 @@
         }
 
         function render() {
-            document.getElementById('dispTotalKm').innerText = Math.floor(db.km).toString().padStart(6, '0');
+            const kmFormatado = Math.floor(db.km).toLocaleString('pt-BR', { 
+        minimumIntegerDigits: 6, 
+        useGrouping: true 
+    });
+    document.getElementById('dispTotalKm').innerText = kmFormatado;
             
             // Lógica Óleo
             const kmRest = INT_OLEO_KM - (db.km - db.kmOleo);
