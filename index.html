@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root { --neon-green: #00ff41; --dark-bg: #000814; --text-gray: #666; --warning-red: #dc2626; --warning-yellow: #eab308; }
+        :root { --neon-green: #00ff41; --dark-bg: #020205; --text-gray: #999; --warning-red: #dc2626; --warning-yellow: #eab308; }
 
         body { 
             background: var(--dark-bg); color: var(--neon-green); font-family: 'Orbitron', sans-serif; 
@@ -32,7 +32,7 @@
         /* 1. Odômetro */
         .odo-container { display: flex; align-items: baseline; gap: 4px; }
         .val-main { color: #fff; font-size: 2.2rem; font-weight: 700; line-height: 1; }
-        .val-meters { color: #000; background: #fff; padding: 2px 6px; border-radius: 3px; font-size: 1.8rem; font-weight: 700; margin-left: 4px; line-height: 1; }
+        .val-meters { color: #000; background: #fff; padding: 2px 2px; border-radius: 3px; font-size: 1.5rem; font-weight: 700; margin-left: 1px; line-height: 1; }
         .val-media { color: #eab308; font-size: 1.6rem; font-weight: 700; }
 
         /* 2. Combustível */
@@ -80,28 +80,29 @@
     <div class="session-card">
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
-                <p class="label-futuristic">Kilometragem Total</p>
+                <p class="label-futuristic">Quilometragem Total</p>
                 <div class="odo-container">
                     <span id="dispTotalKm" class="val-main">00.000</span>
                     <span id="dispMeters" class="val-meters">0</span>
+                    <span style="font-size: 10px; color: #555;"> km</span>
                 </div>
             </div>
             <div style="text-align: right;">
-                <p class="label-futuristic">Média Real</p>
-                <span id="dispMedia" class="val-media">0.0</span><span style="font-size: 10px; color: #555;"> km/L</span>
+                <p class="label-futuristic">Média Km/l</p>
+                <span id="dispMedia" class="val-media">0.0</span>
             </div>
         </div>
     </div>
 
     <div class="session-card">
-        <p class="label-futuristic">Monitor de Combustível</p>
+        <p class="label-futuristic">Nível de Combustível</p>
         <div class="fuel-bar-container">
             <div id="fuelBar" class="fuel-bar"></div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span id="dispAutonomia" style="font-size: 13px; color: #fff;">Autonomia: -- km</span>
+            <span id="dispAutonomia" style="font-size: 14px; color: #fff;">Autonomia: -- km</span>
             <span id="dispLitros" style="color: #fff; font-size: 16px; font-weight: 700;">
-                0.00 <span style="color: #444; font-size: 11px;">/ 4.50L</span>
+                0.00 l<span style="color: #444; font-size: 11px;">/ 4.50L</span>
             </span>
         </div>
         <div id="fuelAlertBox" class="alert-box alert-red blink" style="display: none;">⚠ Reserva de Combustível</div>
@@ -132,14 +133,14 @@
 
     <div class="control-grid" style="margin-bottom: 1.5rem;">
         <button onclick="atualizarApenasKm()" class="btn-sync">Sincronizar KM</button>
-        <button onclick="trocarOleo()" style="border-color: #1e3a8a; color: #60a5fa;">Trocar Óleo</button>
+        <button onclick="trocarOleo()" style="border-color: #1e3a8a; color: #999;">Trocar Óleo</button>
     </div>
 
     <div style="flex-grow: 1;">
         <p class="label-futuristic">Histórico de Abastecimentos</p>
         <div id="historico"></div>
         
-        <div class="control-grid" style="margin-top: 1.5rem; opacity: 0.2;">
+        <div class="control-grid" style="margin-top: 1.5rem; opacity: 0.9;">
             <button onclick="exportarBackup()" style="font-size: 8px;">Exportar</button>
             <button onclick="document.getElementById('fileInput').click()" style="font-size: 8px;">Importar</button>
             <input type="file" id="fileInput" style="display: none;" onchange="importarBackup(event)">
@@ -205,7 +206,7 @@
             histContainer.innerHTML = db.historico.slice(0, 4).map(h => `
                 <div class="history-card">
                     <div>
-                        <p class="label-futuristic" style="margin:0; color:#444">${new Date(h.data).toLocaleDateString()}</p>
+                        <p class="label-futuristic" style="margin:0; color:#888">${new Date(h.data).toLocaleDateString()}</p>
                         <p style="font-size:14px; color:#fff"><b>${h.km.toLocaleString('pt-BR')}</b> km</p>
                     </div>
                     <div style="text-align: right;">
@@ -271,7 +272,7 @@
         function trocarOleo() {
             vibrar(100);
             const km = parseFloat(document.getElementById('inKm').value) || db.km;
-            if(confirm("Confirmar troca de óleo e resetar contador?")) {
+            if(confirm("Confirmar troca de óleo?")) {
                 db.kmOleo = km;
                 db.dataOleo = Date.now();
                 render();
