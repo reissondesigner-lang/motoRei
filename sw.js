@@ -2,7 +2,8 @@ const CACHE_NAME = 'motopanel-v1';
 const ASSETS = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {
