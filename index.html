@@ -259,7 +259,7 @@ async function baixarBackupOnline() {
             }
             db.historico.unshift({ km, litros, cheio, data: Date.now() });
             // Mantém apenas os 10 primeiros itens e descarta o resto
-            db.historico = db.historico.slice(0, 10);
+            db.historico = db.historico.slice(0, 15);
             document.getElementById('inKm').value = ''; document.getElementById('inLitros').value = ''; 
             render();
         }
