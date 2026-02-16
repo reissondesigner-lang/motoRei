@@ -2,7 +2,7 @@
   "name": "MotoPanel PRO+",
   "short_name": "MotoPanel",
   "description": "Painel digital de consumo e manutenção para motos.",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000310",
