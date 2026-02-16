@@ -9,10 +9,16 @@
   "theme_color": "#050505",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/1768/1768214.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
