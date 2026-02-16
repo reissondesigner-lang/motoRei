@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MotoPanel PRO+</title>
     <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root { --neon-green: #00ff41; --dark-bg: #000310; --text-gray: #999; --warning-red: #dc2626; --warning-yellow: #eab308; }
 
+        @font-face {
+    font-family: 'Orbitron';
+    src: url('orbitron.ttf') format('truetype');
+    font-weight: 400 900;
+    font-display: swap;
+}
         body { 
             background: var(--dark-bg); color: var(--neon-green); font-family: 'Orbitron', sans-serif; 
             padding: 1rem; display: flex; flex-direction: column; min-height: 100vh; max-width: 32rem; margin: 0 auto;
