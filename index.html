@@ -81,6 +81,13 @@
     </style>
 </head>
 <body>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 5px;">
+    <h1 style="font-size: 1.2rem; letter-spacing: 2px; color: var(--neon-green);">MotoPanel <span style="color:#fff">PRO+</span></h1>
+    
+    <button onclick="baixarBackupOnline()" style="padding: 0.5rem 0.8rem; font-size: 10px; border-color: var(--neon-green); color: var(--neon-green); background: transparent;">
+        ☁ sync
+    </button>
+</div>
     <div class="session-card">
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
@@ -158,7 +165,24 @@
         };
 
         function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
+// URL do seu banco de dados (adicione o .json no final da URL que você copiou)
+const FIREBASE_URL = "https://motopanelbackup-default-rtdb.firebaseio.com/backup_moto.json";
 
+async function salvarBackupOnline(dados) {
+    // Se estiver offline, ele nem tenta e não gera erro
+    if (!navigator.onLine) return;
+
+    try {
+        await fetch(FIREBASE_URL, {
+            method: 'PUT', // Substitui o backup antigo pelo novo
+            body: JSON.stringify(dados),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        console.log("Nuvem sincronizada.");
+    } catch (e) {
+        console.error("Erro no backup online:", e);
+    }
+}
         function render() {
             const totalFixo = db.km.toFixed(1);
             const partes = totalFixo.split('.');
@@ -193,8 +217,24 @@
                 </div>
             `).join('');
             localStorage.setItem('motoDB_v2', JSON.stringify(db));
+            // Salva na Nuvem (Em segundo plano - não trava o app)
+    salvarBackupOnline(db);
         }
-
+async function baixarBackupOnline() {
+    if (!confirm("Deseja carregar os dados da nuvem? Isso substituirá os dados locais.")) return;
+    
+    try {
+        const response = await fetch(FIREBASE_URL);
+        const dadosNuvem = await response.json();
+        if (dadosNuvem) {
+            db = dadosNuvem;
+            render();
+            alert("Sincronizado com sucesso!");
+        }
+    } catch (e) {
+        alert("Erro ao baixar dados.");
+    }
+}
         function atualizarConsumo(novoKm) {
             if (db.km > 0 && novoKm > db.km) {
                 db.litrosNoTanque = Math.max(0, db.litrosNoTanque - ((novoKm - db.km) / db.mediaSugerida));
