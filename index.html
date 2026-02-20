@@ -228,7 +228,14 @@ async function salvarBackupOnline(dados) {
             document.getElementById('dispMeters').innerText = partes[1] || "0";
             
             const kmRestante = INT_OLEO_KM - (db.km - db.kmOleo);
-            const diasRestantes = INT_OLEO_DIAS - Math.floor((Date.now() - db.dataOleo) / (1000 * 60 * 60 * 24));
+// Garante que dataOleo seja número válido
+const dataOleoValida = Number(db.dataOleo) || Date.now();
+
+const diasPassados = Math.floor(
+    (Date.now() - dataOleoValida) / (1000 * 60 * 60 * 24)
+);
+
+const diasRestantes = Math.max(0, INT_OLEO_DIAS - diasPassados);
             document.getElementById('dispOleo').innerText = `${kmRestante.toFixed(1)} km / ${diasRestantes} d`;
 
             const oilAlertBox = document.getElementById('oilAlert');
