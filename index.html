@@ -132,9 +132,8 @@
     //CONTAINER DE COMBUSTIVEL
   <div class="session-card">
     <p class="label-futuristic">Nível de Combustível</p>
-    <div class="gauge-container">
+    <div class="gauge-container" style="right:15%;">
         <canvas id="fuelGauge"></canvas>
-    
     <div id="gaugeCenter" style="left:60%;">
         <div id="gaugeLitros">0.00L</div>
         <span id="dispAutonomia" style="font-size: 14px; color: #fff;">Autonomia: -- km</span>
@@ -144,19 +143,15 @@
 </div>
     <div class="session-card">
         <div class="oil-info-row">
-            <div>
-                <p class="label-futuristic">Troca de Óleo em</p>
+            <div><p class="label-futuristic">Troca de Óleo em</p>
                 <span id="dispOleo" style="color: #fff; font-size: 14px; font-weight: 700;">---</span>
             </div>
             <div id="oilAlert" class="alert-box blink" style="display: none; margin: 0; width: auto; padding: 6px 12px;"></div>
         </div>
     </div>
     <div class="session-card">
-    <p class="label-futuristic">Média Mensal</p>
+    <p class="label-futuristic">Média Mensal Rodado</p>
     <div id="mediaMensalLista" style="margin-top:8px;"></div>
-    <p style="margin-top:8px; color:#eab308; font-weight:700;">
-        Média Geral: <span id="mediaMensalGeral">0</span> km/mês
-    </p>
 </div>
     <hr>
     
