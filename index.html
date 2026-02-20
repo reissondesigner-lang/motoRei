@@ -220,12 +220,14 @@ async function salvarBackupOnline(dados) {
         }
     }
 async function baixarBackupOnline() {
+    if (!navigator.onLine) { alert("Sem internet"); return; }
     if (!confirm("Deseja carregar os dados da nuvem? Isso substituirá os dados locais.")) return;
     
     try {
-        const response = await fetch(FIREBASE_URL);
+        const response = await fetch(FIREBASE_URL, {cache: "no-store"});
+        if (!response.ok) throw new Error("Falha");
         const dadosNuvem = await response.json();
-        if (!dadosNuvem || dadosNuvem.km === undefined) {
+        if (!dadosNuvem) {
             alert("Backup vazio");
             return;
         }
@@ -235,6 +237,7 @@ async function baixarBackupOnline() {
             alert("Sincronizado com sucesso!");
         
     } catch (e) {
+        console.error(e);
         alert("Erro ao baixar dados.");
     }
 }
