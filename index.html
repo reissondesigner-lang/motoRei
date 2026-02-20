@@ -107,7 +107,25 @@
             </div>
         </div>
     </div>
-
+    //CONTAINER DE COMBUSTIVEL
+<div class="session-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:20px;">
+        <div style="width:220px; height:120px; margin:15px auto; position:relative;">
+    <canvas id="fuelGauge" width="220" height="120" style="display: block; box-sizing: border-box; height: 120px; width: 220px;"></canvas>
+    <div id="gaugeCenter" style="position:absolute; bottom:10px; 
+                text-align:center; left:100%; transform:translateX(90%);">
+        <div id="gaugeLitros" style="font-size:22px; font-weight:700; color:#fff;">4.32L</div>
+        <div style="font-size:10px; color:#888;">COMBUSTÍVEL</div>
+    </div>
+    
+</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="dispAutonomia" style="font-size: 14px; color: #fff;">Autonomia: 174 km</span>
+            
+        </div>
+    </div>
+    </div>
+    //excluir
     <div class="session-card">
         <p class="label-futuristic">Nível de Combustível</p>
         <div class="fuel-bar-container"><div id="fuelBar" class="fuel-bar"></div></div>
