@@ -222,11 +222,14 @@ async function baixarBackupOnline() {
     try {
         const response = await fetch(FIREBASE_URL);
         const dadosNuvem = await response.json();
-        if (dadosNuvem) {
+        if (!dadosNuvem || dadosNuvem.km === undefined) {
+            alert("Backup vazio");
+            return;
+        }
             db = dadosNuvem;
             render();
             alert("Sincronizado com sucesso!");
-        }
+        
     } catch (e) {
         alert("Erro ao baixar dados.");
     }
