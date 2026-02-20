@@ -190,7 +190,7 @@ function mostrarAvisoAtualizacao() {
 
         const CAP_MAX = 4.5, LIMITE_RESERVA = 1.5, INT_OLEO_KM = 1000.0, INT_OLEO_DIAS = 90;
         let db = JSON.parse(localStorage.getItem('motoDB_v2')) || {
-            km: 0, kmOleo: 0, dataOleo: Date.now(), litrosNoTanque: 0, historico: [], mediaSugerida: 35
+            km: 0, kmOleo: 0, dataOleo: Date.now(), litrosNoTanque: 0, historico: [], mediaSugerida: 35, ultimaAtualizacao: Date.now()
         };
 
         function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
@@ -198,18 +198,27 @@ function mostrarAvisoAtualizacao() {
 const FIREBASE_URL = "https://motopanelbackup-default-rtdb.firebaseio.com/backup_moto.json";
 
 async function salvarBackupOnline(dados) {
-    // Se estiver offline, ele nem tenta e não gera erro
     if (!navigator.onLine) return;
 
     try {
+        const response = await fetch(FIREBASE_URL, { cache: "no-store" });
+        const dadosNuvem = await response.json();
+
+        // Se existir backup e ele for mais novo que o local, NÃO sobrescreve
+        if (dadosNuvem && dadosNuvem.ultimaAtualizacao > dados.ultimaAtualizacao) {
+            console.log("Nuvem está mais atual. Cancelando envio.");
+            return;
+        }
+
         await fetch(FIREBASE_URL, {
-            method: 'PUT', // Substitui o backup antigo pelo novo
+            method: 'PUT',
             body: JSON.stringify(dados),
             headers: { 'Content-Type': 'application/json' }
         });
-        console.log("Nuvem sincronizada.");
+
+        console.log("Backup sincronizado com sucesso.");
     } catch (e) {
-        console.error("Erro no backup online:", e);
+        console.error("Erro no backup:", e);
     }
 }
         function render() {
@@ -313,21 +322,26 @@ async function baixarBackupOnline() {
             // Mantém apenas os 10 primeiros itens e descarta o resto
             db.historico = db.historico.slice(0, 15);
             document.getElementById('inKm').value = ''; document.getElementById('inLitros').value = ''; 
+            db.ultimaAtualizacao = Date.now();
             render();
             salvarBackupOnline(db);
         }
 
         function atualizarApenasKm() {
             const km = parseFloat(document.getElementById('inKm').value);
-            if (km >= db.km) { atualizarConsumo(km); document.getElementById('inKm').value = ''; render(); salvarBackupOnline(db); vibrar(); }
+            if (km >= db.km) { atualizarConsumo(km); document.getElementById('inKm').value = ''; db.ultimaAtualizacao = Date.now(); render(); salvarBackupOnline(db); vibrar(); }
         }
 
         function trocarOleo() {
             vibrar(100);
-            if(confirm("Confirmar troca de óleo?")) { db.kmOleo = db.km; db.dataOleo = Date.now(); render(); salvarBackupOnline(db); }
+            if(confirm("Confirmar troca de óleo?")) { db.kmOleo = db.km; db.dataOleo = Date.now(); db.ultimaAtualizacao = Date.now(); render(); salvarBackupOnline(db); }
         }
 
         render();
+        window.addEventListener('online', () => {
+    console.log("Internet voltou. Sincronizando...");
+    salvarBackupOnline(db);
+});
     </script>
 </body>
 </html>
