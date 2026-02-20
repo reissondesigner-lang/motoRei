@@ -438,36 +438,43 @@ function calcularMediaMensal() {
        let fuelChart;
 
 function criarGauge() {
-    const ctx = document.getElementById('fuelGauge').getContext('2d');
+
+    const canvas = document.getElementById('fuelGauge');
+    const ctx = canvas.getContext('2d');
+
+    // Destroi instância anterior se existir (evita bugs de resize)
+    if (fuelChart) {
+        fuelChart.destroy();
+    }
 
     fuelChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            
-        datasets: [{
-    data: [0, CAP_MAX],
-    backgroundColor: ['#00ff41', '#111'],
-    borderWidth: 0,
-    hoverOffset: 0,   // <- ESSENCIAL
-    hoverBorderWidth: 0
-}]
-   options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    rotation: -Math.PI,
-    circumference: Math.PI / 2,
-    cutout: '70%',
+            datasets: [{
+                data: [0, CAP_MAX],   // valor inicial
+                backgroundColor: ['#00ff41', '#111'],
+                borderWidth: 0,
+                hoverOffset: 0,        // impede expansão no hover
+                hoverBorderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,   // controla pelo container
 
-    plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false }
-    },
+            rotation: -Math.PI,           // começa na esquerda
+            circumference: Math.PI / 2,   // 90°
 
-    events: [],  // REMOVE todos eventos de mouse
+            cutout: '70%',
 
-    animation: false   // opcional para estabilidade máxima
-}
-}
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            },
+
+            events: [],        // REMOVE eventos de mouse (crítico)
+            animation: false   // estabilidade máxima (pode ativar depois)
+        }
     });
 }
         
