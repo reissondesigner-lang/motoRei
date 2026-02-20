@@ -15,6 +15,13 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
+// NOTIFICACOES
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'verificar-alertas') {
+    event.waitUntil(verificarAlertas());
+  }
+});
+
 // ACTIVATE
 self.addEventListener('activate', (event) => {
   event.waitUntil(
