@@ -443,12 +443,7 @@ function criarGauge() {
     fuelChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            datasets: [{
-                data: [0, CAP_MAX], // Litros cheios / restante
-                backgroundColor: ['#00ff41', '#111'],
-                borderWidth: 0
-            }]
-        },
+            
         datasets: [{
     data: [0, CAP_MAX],
     backgroundColor: ['#00ff41', '#111'],
@@ -472,8 +467,10 @@ function criarGauge() {
 
     animation: false   // opcional para estabilidade máxima
 }
+}
     });
 }
+        
         let fuelGaugeCanvas = document.getElementById('fuelGauge');
 let fuelGaugeCtx = fuelGaugeCanvas.getContext('2d');
 let currentFuel = 0;  // valor que será animado
