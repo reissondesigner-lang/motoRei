@@ -167,6 +167,24 @@
   });
 }
 
+        navigator.serviceWorker.ready.then(async (registration) => {
+  if ('periodicSync' in registration) {
+    try {
+      await registration.periodicSync.register('verificar-alertas', {
+        minInterval: 12 * 60 * 60 * 1000 // 12h
+      });
+    } catch (e) {
+      console.log("Periodic Sync não suportado");
+    }
+  }
+});
+
+        navigator.serviceWorker.addEventListener("message", (event) => {
+  if (event.data?.type === "CHECK_ALERTS") {
+    verificarAlertasLocal();
+  }
+});
+
 function mostrarAvisoAtualizacao() {
   const aviso = document.createElement("div");
   aviso.style.position = "fixed";
@@ -344,11 +362,67 @@ async function baixarBackupOnline() {
             if(confirm("Confirmar troca de óleo?")) { db.kmOleo = db.km; db.dataOleo = Date.now(); db.ultimaAtualizacao = Date.now(); render(); salvarBackupOnline(db); }
         }
 
+function verificarAlertasLocal() {
+  const agora = Date.now();
+
+  // ⏱ Sem atualização há mais de 7 dias
+  const diasSemAtualizar = Math.floor(
+    (agora - db.ultimaAtualizacao) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diasSemAtualizar >= 7) {
+    mostrarNotificacao("MotoRei", "⚠ Você não atualiza há 7 dias.");
+  }
+
+  // 🛢 Óleo vencido
+  const kmRestante = INT_OLEO_KM - (db.km - db.kmOleo);
+  const diasPassados = Math.floor(
+    (agora - db.dataOleo) / (1000 * 60 * 60 * 24)
+  );
+
+  if (kmRestante <= 0 || diasPassados >= INT_OLEO_DIAS) {
+    mostrarNotificacao("MotoRei", "🛢 Hora de trocar o óleo!");
+  }
+
+  // ⛽ Reserva
+  if (db.litrosNoTanque < LIMITE_RESERVA) {
+    mostrarNotificacao("MotoRei", "⛽ Atenção: combustível na reserva!");
+  }
+}
+function mostrarNotificacao(titulo, corpo) {
+  if (Notification.permission === "granted") {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(titulo, {
+        body: corpo,
+        icon: "./icon-512.png",
+        badge: "./icon-512.png",
+        vibrate: [200, 100, 200]
+      });
+    });
+  }
+}
+        
+async function solicitarPermissaoNotificacao() {
+  if (!("Notification" in window)) return;
+
+  const permissao = await Notification.requestPermission();
+  if (permissao !== "granted") {
+    alert("Permissão de notificação negada.");
+  }
+}
+        async function verificarAlertas() {
+  const clientsList = await self.clients.matchAll({ type: "window" });
+  if (!clientsList.length) return;
+
+  clientsList[0].postMessage({ type: "CHECK_ALERTS" });
+}
+        solicitarPermissaoNotificacao();
         render();
         window.addEventListener('online', () => {
     console.log("Internet voltou. Sincronizando...");
     salvarBackupOnline(db);
 });
+        
     </script>
 </body>
 </html>
