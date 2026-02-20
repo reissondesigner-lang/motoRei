@@ -206,7 +206,7 @@ async function salvarBackupOnline(dados) {
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
             document.getElementById('dispAutonomia').innerText = `Autonomia: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
 
-            document.getElementById('historico').innerHTML = db.historico.slice(0, 3).map(h => `
+            document.getElementById('historico').innerHTML = (db.historico || []).slice(0, 3).map(h => `
                 <div class="history-card">
                     <div><p class="label-futuristic" style="margin:0">${new Date(h.data).toLocaleDateString()}</p><p style="color:#fff"><b>${h.km}</b> km</p></div>
                     <div style="text-align: right;"><p style="color: #eab308; font-weight: 700;">${h.litros.toFixed(2)}L</p></div>
@@ -222,20 +222,31 @@ async function salvarBackupOnline(dados) {
 async function baixarBackupOnline() {
     if (!navigator.onLine) { alert("Sem internet"); return; }
     if (!confirm("Deseja carregar os dados da nuvem? Isso substituirá os dados locais.")) return;
-    
+
     try {
-        const response = await fetch(FIREBASE_URL, {cache: "no-store"});
-        if (!response.ok) throw new Error("Falha");
+        const response = await fetch(FIREBASE_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error("Falha na requisição");
+
         const dadosNuvem = await response.json();
         if (!dadosNuvem) {
             alert("Backup vazio");
             return;
         }
-            db = dadosNuvem;
-        localStorage.setItem('motoDB_v2',JSON.stringify(db));
-            render();
-            alert("Sincronizado com sucesso!");
-        
+
+        db = {
+            km: 0,
+            kmOleo: 0,
+            dataOleo: Date.now(),
+            litrosNoTanque: 0,
+            historico: [],
+            mediaSugerida: 35,
+            ...dadosNuvem
+        };
+
+        localStorage.setItem('motoDB_v2', JSON.stringify(db));
+        render();
+        alert("Sincronizado com sucesso!");
+
     } catch (e) {
         console.error(e);
         alert("Erro ao baixar dados.");
