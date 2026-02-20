@@ -319,8 +319,9 @@ if (fuelChart) {
     document.getElementById("gaugeLitros").innerText =
         db.litrosNoTanque.toFixed(2) + "L";
 }
-           drawFuelGauge(db.litrosNoTanque);
-document.getElementById("gaugeLitros").innerText = db.litrosNoTanque.toFixed(2)+'L';
+targetFuel = db.litrosNoTanque;
+animateFuelGauge();
+            document.getElementById("gaugeLitros").innerText = db.litrosNoTanque.toFixed(2)+'L';
             
         const media = calcularMediaMensal();
 
@@ -444,7 +445,9 @@ function criarGauge() {
 }
         let fuelGaugeCanvas = document.getElementById('fuelGauge');
 let fuelGaugeCtx = fuelGaugeCanvas.getContext('2d');
-
+let currentFuel = 0;  // valor que será animado
+let targetFuel = 0;   // valor real do tanque
+        
 function drawFuelGauge(value) {
     const ctx = fuelGaugeCtx;
     const width = fuelGaugeCanvas.width;
@@ -471,13 +474,11 @@ function drawFuelGauge(value) {
     ctx.lineWidth = 15;
 
     let color = '#00ff41';
-    if (value < LIMITE_RESERVA) color = '#dc2626';
-    else if (value < 2.5) color = '#eab308';
-    ctx.strokeStyle = color;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 10;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+if (value < LIMITE_RESERVA) color = '#dc2626';
+else if (value < 2.5) color = '#eab308';
+ctx.strokeStyle = color;
+ctx.shadowColor = color;
+ctx.shadowBlur = 10;
 
     // --- Ponteiro ---
     const angle = Math.PI + perc * (Math.PI/2);
@@ -503,6 +504,18 @@ function drawFuelGauge(value) {
         ctx.lineTo(x2,y2);
         ctx.stroke();
     });
+}
+        function animateFuelGauge() {
+    const delta = targetFuel - currentFuel;
+    // move gradualmente (ajuste a suavidade aqui)
+    currentFuel += delta * 0.05; // 0.05 = velocidade da animação
+    if (Math.abs(delta) < 0.01) currentFuel = targetFuel; // evita oscilação infinita
+
+    drawFuelGauge(currentFuel);
+
+    if (currentFuel !== targetFuel) {
+        requestAnimationFrame(animateFuelGauge);
+    }
 }
         
         function abastecer() {
