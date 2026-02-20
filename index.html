@@ -113,10 +113,9 @@
         <div class="fuel-bar-container"><div id="fuelBar" class="fuel-bar"></div></div>
 <div style="width:220px; height:220px; margin: 15px auto; position:relative;">
     <canvas id="fuelGauge"></canvas>
-
     <div id="gaugeCenter"
          style="position:absolute;
-                bottom:35px;
+                bottom:10px;
                 left:50%;
                 transform:translateX(-50%);
                 text-align:center;">
@@ -310,24 +309,19 @@ const diasRestantes = Math.max(0, INT_OLEO_DIAS - diasPassados);
 const restante = CAP_MAX - db.litrosNoTanque;
 
 if (fuelChart) {
-    fuelChart.data.datasets[0].data = [
-        db.litrosNoTanque,
-        restante
-    ];
+    const restante = CAP_MAX - db.litrosNoTanque;
 
-    // Cor dinâmica
     let cor = '#00ff41';
     if (db.litrosNoTanque < LIMITE_RESERVA) cor = '#dc2626';
     else if (db.litrosNoTanque < 2.5) cor = '#eab308';
 
+    fuelChart.data.datasets[0].data = [db.litrosNoTanque, restante];
     fuelChart.data.datasets[0].backgroundColor = [cor, '#111'];
-fuelChart.options.plugins = {
-    legend: { display: false }
-};
     fuelChart.update();
+
+    document.getElementById("gaugeLitros").innerText =
+        db.litrosNoTanque.toFixed(2) + "L";
 }
-            document.getElementById("gaugeLitros").innerText =
-    db.litrosNoTanque.toFixed(2) + "L";
             
         const media = calcularMediaMensal();
 
@@ -418,31 +412,32 @@ function calcularMediaMensal() {
     };
 }
 
-        let fuelChart;
+       let fuelChart;
 
 function criarGauge() {
-    const ctx = document.getElementById('fuelGauge');
+    const ctx = document.getElementById('fuelGauge').getContext('2d');
 
     fuelChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [0, CAP_MAX],
+                data: [0, CAP_MAX], // Litros cheios / restante
                 backgroundColor: ['#00ff41', '#111'],
                 borderWidth: 0
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, // AGORA É FALSE
-            circumference: Math.PI / 2, // 90 graus
-            rotation: -Math.PI / 2,     // começa na esquerda
-            cutout: '80%',
+            maintainAspectRatio: false, // permite preencher o quadrado
+            rotation: -Math.PI,          // inicia na esquerda
+            circumference: Math.PI / 2,  // 90° do círculo
+            cutout: '70%',               // raio do centro
             plugins: {
                 legend: { display: false },
                 tooltip: { enabled: false }
             },
             animation: {
+                animateRotate: true,
                 duration: 800
             }
         }
