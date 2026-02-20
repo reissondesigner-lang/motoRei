@@ -111,13 +111,10 @@
     <div class="session-card">
         <p class="label-futuristic">Nível de Combustível</p>
         <div class="fuel-bar-container"><div id="fuelBar" class="fuel-bar"></div></div>
-<div style="width:220px; height:220px; margin: 15px auto; position:relative;">
-    <canvas id="fuelGauge"></canvas>
+<div style="width:220px; height:120px; margin:15px auto; position:relative;">
+    <canvas id="fuelGauge" width="220" height="120"></canvas>
     <div id="gaugeCenter"
-         style="position:absolute;
-                bottom:10px;
-                left:50%;
-                transform:translateX(-50%);
+         style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
                 text-align:center;">
         <div id="gaugeLitros"
              style="font-size:22px; font-weight:700; color:#fff;">
@@ -322,6 +319,8 @@ if (fuelChart) {
     document.getElementById("gaugeLitros").innerText =
         db.litrosNoTanque.toFixed(2) + "L";
 }
+           drawFuelGauge(db.litrosNoTanque);
+document.getElementById("gaugeLitros").innerText = db.litrosNoTanque.toFixed(2)+'L';
             
         const media = calcularMediaMensal();
 
@@ -441,6 +440,68 @@ function criarGauge() {
                 duration: 800
             }
         }
+    });
+}
+        let fuelGaugeCanvas = document.getElementById('fuelGauge');
+let fuelGaugeCtx = fuelGaugeCanvas.getContext('2d');
+
+function drawFuelGauge(value) {
+    const ctx = fuelGaugeCtx;
+    const width = fuelGaugeCanvas.width;
+    const height = fuelGaugeCanvas.height;
+    ctx.clearRect(0, 0, width, height);
+
+    const centerX = width / 2;
+    const centerY = height;
+    const radius = Math.min(width, height*2)/2 - 10;
+
+    // --- Fundo do arco ---
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, Math.PI, Math.PI*1.5, false);
+    ctx.lineWidth = 15;
+    ctx.strokeStyle = '#111';
+    ctx.stroke();
+
+    // --- Arco combustível ---
+    let perc = Math.min(Math.max(value / CAP_MAX, 0), 1);
+    let endAngle = Math.PI + perc * (Math.PI/2);
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, Math.PI, endAngle, false);
+    ctx.lineWidth = 15;
+
+    let color = '#00ff41';
+    if (value < LIMITE_RESERVA) color = '#dc2626';
+    else if (value < 2.5) color = '#eab308';
+    ctx.strokeStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // --- Ponteiro ---
+    const angle = Math.PI + perc * (Math.PI/2);
+    const pointerLength = radius - 5;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(centerX + Math.cos(angle)*pointerLength, centerY + Math.sin(angle)*pointerLength);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#ff0000';
+    ctx.stroke();
+
+    // --- Marcas 0 / ½ / Full ---
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#888';
+    [0, 0.5, 1].forEach(p => {
+        const a = Math.PI + p*(Math.PI/2);
+        const x1 = centerX + Math.cos(a)*(radius-5);
+        const y1 = centerY + Math.sin(a)*(radius-5);
+        const x2 = centerX + Math.cos(a)*(radius+5);
+        const y2 = centerY + Math.sin(a)*(radius+5);
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+        ctx.stroke();
     });
 }
         
