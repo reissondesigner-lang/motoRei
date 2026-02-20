@@ -79,6 +79,16 @@
         @keyframes blinker { 50% { opacity: 0.3; } }
         hr { width:100%; margin: 20px 0; border: 1px solid #1a202c; }
 }
+        .gauge-wrapper {
+    width: 100%;
+    max-width: 220px;
+    aspect-ratio: 4 / 3; /* controla proporção */
+}
+
+#fuelGauge {
+    width: 100% !important;
+    height: 100% !important;
+}
     </style>
 </head>
 <body>
@@ -106,17 +116,8 @@
         </div>
     </div>
     //CONTAINER DE COMBUSTIVEL
-<div style="width:220px; height:120px; margin:15px auto; position:relative;">
-    <canvas id="fuelGauge" width="220" height="120"></canvas>
-    <div id="gaugeCenter"
-         style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
-                text-align:center;">
-        <div id="gaugeLitros"
-             style="font-size:22px; font-weight:700; color:#fff;">
-            0.00L
-        </div>
-        <div style="font-size:10px; color:#888;">COMBUSTÍVEL</div>
-    </div>
+<div class="gauge-wrapper">
+    <canvas id="fuelGauge"></canvas>
 </div>
     //salva
      <div id="gaugeCenter" style="position:absolute; bottom:10px; transform:translateX(-50%); text-align:center; left:100%; width:100%;">
