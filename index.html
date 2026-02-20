@@ -108,8 +108,9 @@
     <div class="session-card">
         <p class="label-futuristic">Nível de Combustível</p>
         <div class="fuel-bar-container"><div id="fuelBar" class="fuel-bar"></div></div>
-        <canvas id="fuelGauge" height="120" style="margin-top:10px;"></canvas>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+<div style="width:100%; max-width:260px; margin: 10px auto;">
+    <canvas id="fuelGauge"></canvas>
+</div>        <div style="display: flex; justify-content: space-between; align-items: center;">
             <span id="dispAutonomia" style="font-size: 14px; color: #fff;">Autonomia: -- km</span>
             <span id="dispLitros" style="color: #fff; font-size: 16px; font-weight: 700;">0.00 l<span style="color: #444; font-size: 11px;">/ 4.50L</span></span>
         </div>
@@ -399,7 +400,7 @@ function calcularMediaMensal() {
         let fuelChart;
 
 function criarGauge() {
-    const ctx = document.getElementById('fuelGauge').getContext('2d');
+    const ctx = document.getElementById('fuelGauge');
 
     fuelChart = new Chart(ctx, {
         type: 'doughnut',
@@ -412,12 +413,14 @@ function criarGauge() {
         },
         options: {
             responsive: true,
-            circumference: 90 * Math.PI / 180, // 90 graus
-            rotation: -90 * Math.PI / 180,     // começa na esquerda
+            maintainAspectRatio: true, // IMPORTANTE
+            aspectRatio: 2, // controla formato do arco
+            circumference: Math.PI / 2, // 90 graus
+            rotation: -Math.PI / 2,     // inicia na esquerda
             cutout: '75%',
             plugins: {
-                tooltip: { enabled: false },
-                legend: { display: false }
+                legend: { display: false },
+                tooltip: { enabled: false }
             },
             animation: {
                 animateRotate: true,
