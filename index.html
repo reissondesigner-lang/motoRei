@@ -491,19 +491,33 @@ ctx.shadowBlur = 10;
     ctx.stroke();
 
     // --- Marcas 0 / ½ / Full ---
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = '#888';
-    [0, 0.5, 1].forEach(p => {
-        const a = Math.PI + p*(Math.PI/2);
-        const x1 = centerX + Math.cos(a)*(radius-5);
-        const y1 = centerY + Math.sin(a)*(radius-5);
-        const x2 = centerX + Math.cos(a)*(radius+5);
-        const y2 = centerY + Math.sin(a)*(radius+5);
-        ctx.beginPath();
-        ctx.moveTo(x1,y1);
-        ctx.lineTo(x2,y2);
-        ctx.stroke();
-    });
+ctx.lineWidth = 3; // espessura da marca
+ctx.strokeStyle = '#888'; // cor da marca
+const marcaRadius = radius + 5; // distância do centro
+[0, 0.5, 1].forEach(p => {
+    const a = Math.PI + p*(Math.PI/2); // ângulo da marca
+    const x1 = centerX + Math.cos(a)*(radius - 10); // ponto interno
+    const y1 = centerY + Math.sin(a)*(radius - 10);
+    const x2 = centerX + Math.cos(a)*marcaRadius; // ponto externo
+    const y2 = centerY + Math.sin(a)*marcaRadius;
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+
+    // opcional: colocar texto 0 / ½ / F
+    ctx.font = '10px Orbitron';
+    ctx.fillStyle = '#888';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    let label = '';
+    if(p === 0) label = '0';
+    else if(p === 0.5) label = '½';
+    else if(p === 1) label = 'F';
+    const lx = centerX + Math.cos(a)*(radius + 15);
+    const ly = centerY + Math.sin(a)*(radius + 15);
+    ctx.fillText(label, lx, ly);
+});
 }
         function animateFuelGauge() {
     const delta = targetFuel - currentFuel;
