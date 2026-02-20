@@ -1,6 +1,5 @@
-const CACHE_NAME = 'motopanel-v2';
-
-const ASSETS = [
+const CACHE_NAME = 'motopanel-v3';
+const STATIC_CACHE = [
   './',
   './index.html',
   './manifest.json',
@@ -8,25 +7,21 @@ const ASSETS = [
   './orbitron.ttf'
 ];
 
-// Instala
+// INSTALL
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_CACHE))
   );
   self.skipWaiting();
 });
 
-// Ativa e limpa versões antigas
+// ACTIVATE
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       )
     )
@@ -34,23 +29,29 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Estratégia Cache First robusta
+// FETCH - Cache First com fallback inteligente
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) return response;
+  if (event.request.method !== 'GET') return;
 
-        return fetch(event.request)
-          .then(fetchRes => {
-            return fetchRes;
-          })
-          .catch(() => {
-            // fallback para navegação offline
-            if (event.request.mode === 'navigate') {
-              return caches.match('./index.html');
-            }
-          });
-      })
+  event.respondWith(
+    caches.match(event.request).then(cacheRes => {
+      if (cacheRes) return cacheRes;
+
+      return fetch(event.request)
+        .then(networkRes => {
+          if (networkRes && networkRes.status === 200) {
+            const cloned = networkRes.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, cloned);
+            });
+          }
+          return networkRes;
+        })
+        .catch(() => {
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+    })
   );
 });
