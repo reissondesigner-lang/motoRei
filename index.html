@@ -299,13 +299,9 @@ const diasRestantes = Math.max(0, INT_OLEO_DIAS - diasPassados);
                 oilAlertBox.style.display = "block"; oilAlertBox.className = "alert-box alert-yellow blink"; oilAlertBox.innerText = "⚠";
             } else { oilAlertBox.style.display = "none"; }
 
-            const perc = (db.litrosNoTanque / CAP_MAX) * 100;
-            const bar = document.getElementById('fuelBar');
-            bar.style.width = Math.min(perc, 100) + '%';
-            bar.style.backgroundColor = db.litrosNoTanque < LIMITE_RESERVA ? 'var(--warning-red)' : 'var(--neon-green)';
+           
             document.getElementById('fuelAlertBox').style.display = db.litrosNoTanque < LIMITE_RESERVA ? "block" : "none";
 
-            document.getElementById('dispLitros').innerText = db.litrosNoTanque.toFixed(2);
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
             document.getElementById('dispAutonomia').innerText = `Autonomia: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
 
