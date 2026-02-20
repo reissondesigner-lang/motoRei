@@ -616,29 +616,7 @@ function verificarAlertasLocal() {
   }
 }
 
-        //Proporção grafico combustivel
-        const canvas = document.getElementById("fuelGauge");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-  const ratio = window.devicePixelRatio || 1;
-
-  const width = canvas.clientWidth;
-  const height = width * 0.6; // mantém proporção 200x120 (~0.6)
-
-  canvas.width = width * ratio;
-  canvas.height = height * ratio;
-
-  canvas.style.height = height + "px";
-
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.scale(ratio, ratio);
-
-  drawGauge(); // sua função de desenho
-}
-
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
+        
         
         function mostrarNotificacao(titulo, corpo) {
   if (Notification.permission === "granted") {
