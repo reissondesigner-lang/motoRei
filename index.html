@@ -214,10 +214,8 @@ async function salvarBackupOnline(dados) {
             `).join('');
             localStorage.setItem('motoDB_v2', JSON.stringify(db));
             // Salva na Nuvem (Em segundo plano - não trava o app)
-    if (!db.inicializado){
-        db.inicializado = true;
-            salvarBackupOnline(db);
-        }
+            
+        
     }
 async function baixarBackupOnline() {
     if (!navigator.onLine) { alert("Sem internet"); return; }
@@ -283,19 +281,18 @@ async function baixarBackupOnline() {
             db.historico = db.historico.slice(0, 15);
             document.getElementById('inKm').value = ''; document.getElementById('inLitros').value = ''; 
             render();
+            salvarBackupOnline(db);
         }
 
         function atualizarApenasKm() {
             const km = parseFloat(document.getElementById('inKm').value);
-            if (km >= db.km) { atualizarConsumo(km); document.getElementById('inKm').value = ''; render(); vibrar(); }
+            if (km >= db.km) { atualizarConsumo(km); document.getElementById('inKm').value = ''; render(); salvarBackupOnline(db); vibrar(); }
         }
 
         function trocarOleo() {
             vibrar(100);
-            if(confirm("Confirmar troca de óleo?")) { db.kmOleo = db.km; db.dataOleo = Date.now(); render(); }
+            if(confirm("Confirmar troca de óleo?")) { db.kmOleo = db.km; db.dataOleo = Date.now(); render(); salvarBackupOnline(db); }
         }
-
-       
 
         render();
     </script>
