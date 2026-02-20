@@ -152,8 +152,41 @@
     <script>
         // Registro do Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(err => console.log("Erro SW:", err));
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+
+    reg.onupdatefound = () => {
+      const newWorker = reg.installing;
+
+      newWorker.onstatechange = () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          mostrarAvisoAtualizacao();
         }
+      };
+    };
+
+  });
+}
+
+function mostrarAvisoAtualizacao() {
+  const aviso = document.createElement("div");
+  aviso.style.position = "fixed";
+  aviso.style.bottom = "20px";
+  aviso.style.left = "50%";
+  aviso.style.transform = "translateX(-50%)";
+  aviso.style.background = "#111";
+  aviso.style.color = "#00ff41";
+  aviso.style.padding = "12px 20px";
+  aviso.style.border = "1px solid #00ff41";
+  aviso.style.borderRadius = "8px";
+  aviso.style.zIndex = "9999";
+  aviso.innerHTML = "Nova versão disponível <button style='margin-left:10px;'>Atualizar</button>";
+
+  aviso.querySelector("button").onclick = () => {
+    window.location.reload();
+  };
+
+  document.body.appendChild(aviso);
+}
 
         const CAP_MAX = 4.5, LIMITE_RESERVA = 1.5, INT_OLEO_KM = 1000.0, INT_OLEO_DIAS = 90;
         let db = JSON.parse(localStorage.getItem('motoDB_v2')) || {
