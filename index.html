@@ -79,25 +79,16 @@
         @keyframes blinker { 50% { opacity: 0.3; } }
         hr { width:100%; margin: 20px 0; border: 1px solid #1a202c; }
 }
-        .gauge-wrapper {
-    width: 100%;
-    max-width: 220px;
-    aspect-ratio: 4 / 3; /* controla proporção */
+.gauge-container {
+    width: 180px;
+    height: 120px;
+    min-height: 120px;
 }
-
 #fuelGauge {
     width: 100% !important;
     height: 100% !important;
 }
-        @media (max-width: 480px) {
-    .gauge-row {
-        justify-content: center;
-    }
-
-    .gauge-wrapper {
-        width: 160px;
-    }
-}
+      
     </style>
 </head>
 <body>
@@ -131,12 +122,12 @@
     <div class="gauge-container">
         <canvas id="fuelGauge"></canvas>
     </div>
-</div>
-    //salva
-     <div id="gaugeCenter" style="position:absolute; bottom:10px; transform:translateX(-50%); text-align:center; left:100%; width:100%;">
+       <div id="gaugeCenter" style="position:absolute; bottom:10px; text-align:center; width:100%;">
         <div id="gaugeLitros" style="font-size:22px; font-weight:700; color:#fff;">0.00L</div>
         <span id="dispAutonomia" style="font-size: 14px; color: #fff;">Autonomia: -- km</span>
     </div>
+</div>
+     
     //excluir
     
     <div class="session-card">
@@ -457,21 +448,27 @@ function criarGauge() {
                 borderWidth: 0
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false, // permite preencher o quadrado
-            rotation: -Math.PI,          // inicia na esquerda
-            circumference: Math.PI / 2,  // 90° do círculo
-            cutout: '70%',               // raio do centro
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: false }
-            },
-            animation: {
-                animateRotate: true,
-                duration: 800
-            }
-        }
+        datasets: [{
+    data: [0, CAP_MAX],
+    backgroundColor: ['#00ff41', '#111'],
+    borderWidth: 0,
+    hoverOffset: 0   // <- ESSENCIAL
+}]
+    //    options: {
+    //        responsive: true,
+    //        maintainAspectRatio: false, // permite preencher o quadrado
+    //        rotation: -Math.PI,          // inicia na esquerda
+    //        circumference: Math.PI / 2,  // 90° do círculo
+    //        cutout: '70%',               // raio do centro
+    //        plugins: {
+    //            legend: { display: false },
+    //            tooltip: { enabled: false }
+    //        },
+    //        animation: {
+    //            animateRotate: true,
+    //            duration: 800
+    //        }
+    //    }
     });
 }
         let fuelGaugeCanvas = document.getElementById('fuelGauge');
