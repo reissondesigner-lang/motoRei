@@ -214,7 +214,10 @@ async function salvarBackupOnline(dados) {
             `).join('');
             localStorage.setItem('motoDB_v2', JSON.stringify(db));
             // Salva na Nuvem (Em segundo plano - não trava o app)
-    salvarBackupOnline(db);
+    if (!db.inicializado){
+        db.inicializado = true;
+            salvarBackupOnline(db);
+        }
         }
 async function baixarBackupOnline() {
     if (!confirm("Deseja carregar os dados da nuvem? Isso substituirá os dados locais.")) return;
