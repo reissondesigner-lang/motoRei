@@ -80,6 +80,9 @@
         hr { width:100%; margin: 20px 0; border: 1px solid #1a202c; }
         #fuelGauge {
     filter: drop-shadow(0 0 6px #00ff41);
+             width: 100%;
+  max-width: 220px;
+  height: auto;
 }
     </style>
 </head>
@@ -112,7 +115,7 @@
     <p class="label-futuristic">Nível de Combustível</p>
     <div style="display:flex; justify-content:space-between; align-items:center; gap:20px;">
         <div style="width:150px; height:100px; position:relative;">
-<canvas id="fuelGauge" width="150" height="100" style="display:block; width:150px; height:100px;"></canvas>
+<canvas id="fuelGauge""></canvas>
             <div id="gaugeCenter" style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); text-align:center; left:100%; width:100%;">
         <div id="gaugeLitros" style="font-size:22px; font-weight:700; color:#fff;">4.50L</div>
         <span id="dispAutonomia" style="font-size: 14px; color: #fff;">Autonomia: 174 km</span>
@@ -584,6 +587,7 @@ const marcaRadius = radius + 5; // distância do centro
             if(confirm("Confirmar troca de óleo?")) { db.kmOleo = db.km; db.dataOleo = Date.now(); db.ultimaAtualizacao = Date.now(); render(); salvarBackupOnline(db); }
         }
 
+        // verificar alertas
 function verificarAlertasLocal() {
   const agora = Date.now();
 
@@ -611,7 +615,32 @@ function verificarAlertasLocal() {
     mostrarNotificacao("MotoRei", "⛽ Atenção: combustível na reserva!");
   }
 }
-function mostrarNotificacao(titulo, corpo) {
+
+        //Proporção grafico combustivel
+        const canvas = document.getElementById("fuelGauge");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+  const ratio = window.devicePixelRatio || 1;
+
+  const width = canvas.clientWidth;
+  const height = width * 0.6; // mantém proporção 200x120 (~0.6)
+
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+
+  canvas.style.height = height + "px";
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(ratio, ratio);
+
+  drawGauge(); // sua função de desenho
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+        
+        function mostrarNotificacao(titulo, corpo) {
   if (Notification.permission === "granted") {
     navigator.serviceWorker.ready.then(reg => {
       reg.showNotification(titulo, {
