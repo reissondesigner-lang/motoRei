@@ -227,6 +227,7 @@ async function baixarBackupOnline() {
             return;
         }
             db = dadosNuvem;
+        localStorage.setItem('motoDB_v2',JSON.stringify(db));
             render();
             alert("Sincronizado com sucesso!");
         
