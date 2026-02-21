@@ -592,7 +592,7 @@ async function solicitarPermissaoNotificacao() {
   clientsList[0].postMessage({ type: "CHECK_ALERTS" });
 }
         solicitarPermissaoNotificacao();
-        criarGauge();
+        
         render();
         window.addEventListener('online', () => {
     console.log("Internet voltou. Sincronizando...");
