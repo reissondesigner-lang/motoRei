@@ -624,12 +624,12 @@ async function solicitarPermissaoNotificacao() {
   navigator.serviceWorker.ready.then(reg => {
     reg.showNotification("🏍 MotoRei PRO+", {
       body:
-        `KM: ${db.km.toFixed(1)} km\n` +
-        `Combustível: ${db.litrosNoTanque.toFixed(2)}L\n` +
-        `Autonomia: ${autonomia} km\n` +
-        `Óleo: ${statusOleo}`,
+        `Óleo: ${statusOleo} Falta: ${kmRestanteOleo} Km\n` +
+        `Gasol: ${db.litrosNoTanque.toFixed(2)}L ` +
+        `Auton: ${autonomia} km\n` +
+        `KM: ${db.km.toFixed(1)} km\n`,
       icon: "./icon-512.png",
-      badge: "./icon-512.png",
+  //    badge: "./icon-512.png",
       tag: "motorei-widget",
       renotify: false,
       requireInteraction: true,
