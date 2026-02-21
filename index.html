@@ -92,7 +92,7 @@
 .gauge-container {
     width: 100%;
     max-width: 260px;
-    height: 140px; /* aumenta altura real */
+    height: 130px; /* aumenta altura real */
     position: relative;
 }
 
@@ -146,12 +146,12 @@
     <p class="label-futuristic">Nível de Combustível</p>
     <div class="fuel-row">
       <div class="gauge-container">
-        <canvas id="fuelGauge"></canvas>
+        <canvas id="fuelGauge"></canvas>     </div>
     <div id="gaugeCenter">
         <div id="gaugeLitros">0.00L</div>
         <span id="dispAutonomia" style="font-size: 14px; color: #fff;">Autonomia: -- km</span>
         <div id="fuelAlertBox" class="alert-box alert-red blink" style="display: none;">⚠ Reserva</div>
-        </div>
+   
     </div>
     </div>
 </div>
@@ -458,15 +458,11 @@ function criarGauge() {
             responsive: true,
             maintainAspectRatio: false,   // controla pelo container
 
-            rotation: -Math.PI,           // começa na esquerda
+            rotation: -Math.PI * 0.75,           // começa na esquerda
             circumference: Math.PI / 2,   // 90°
 
             cutout: '70%',
-            layout: {
-    padding: {
-        top: -40  // REMOVE espaço fantasma
-    }
-},
+            
 
             plugins: {
                 legend: { display: false },
