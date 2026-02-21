@@ -324,6 +324,25 @@ const diasRestantes = Math.max(0, INT_OLEO_DIAS - diasPassados);
 const restante = CAP_MAX - db.litrosNoTanque;
             targetFuel = db.litrosNoTanque;
 animateFuelGauge();
+            // --- Média Mensal ---
+const dadosMensais = calcularMediaMensal();
+
+const listaEl = document.getElementById("mediaMensalLista");
+const geralEl = document.getElementById("mediaMensalGeral");
+
+if (dadosMensais.meses.length === 0) {
+    listaEl.innerHTML = "<span style='color:#555'>Sem dados suficientes</span>";
+    geralEl.innerText = "0";
+} else {
+    listaEl.innerHTML = dadosMensais.meses.map(m => `
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+            <span style="color:#999">${m.label}</span>
+            <span style="color:#fff">${m.km.toFixed(0)} km</span>
+        </div>
+    `).join("");
+
+    geralEl.innerText = dadosMensais.mediaGeral.toFixed(0);
+}
         }
 
 async function baixarBackupOnline() {
