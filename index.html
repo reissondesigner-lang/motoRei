@@ -322,6 +322,8 @@ const diasRestantes = Math.max(0, INT_OLEO_DIAS - diasPassados);
             // Salva na Nuvem (Em segundo plano - não trava o app)
 
 const restante = CAP_MAX - db.litrosNoTanque;
+            targetFuel = db.litrosNoTanque;
+animateFuelGauge();
         }
 
 async function baixarBackupOnline() {
