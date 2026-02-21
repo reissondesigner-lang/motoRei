@@ -342,6 +342,7 @@ if (dadosMensais.meses.length === 0) {
 
     geralEl.innerText = dadosMensais.mediaGeral.toFixed(0);
 }
+            atualizarWidgetNotificacao();
         }
 
 async function baixarBackupOnline() {
@@ -611,12 +612,38 @@ async function solicitarPermissaoNotificacao() {
 
   clientsList[0].postMessage({ type: "CHECK_ALERTS" });
 }
+        function atualizarWidgetNotificacao() {
+  if (Notification.permission !== "granted") return;
+
+  const autonomia = (db.litrosNoTanque * db.mediaSugerida).toFixed(0);
+  const kmRestanteOleo = (INT_OLEO_KM - (db.km - db.kmOleo)).toFixed(0);
+
+  let statusOleo = "OK";
+  if (kmRestanteOleo <= 0) statusOleo = "Trocar óleo!";
+
+  navigator.serviceWorker.ready.then(reg => {
+    reg.showNotification("🏍 MotoRei PRO+", {
+      body:
+        `KM: ${db.km.toFixed(1)} km\n` +
+        `Combustível: ${db.litrosNoTanque.toFixed(2)}L\n` +
+        `Autonomia: ${autonomia} km\n` +
+        `Óleo: ${statusOleo}`,
+      icon: "./icon-512.png",
+      badge: "./icon-512.png",
+      tag: "motorei-widget",
+      renotify: false,
+      requireInteraction: true,
+      silent: true
+    });
+  });
+}
         solicitarPermissaoNotificacao();
         
         render();
         window.addEventListener('online', () => {
     console.log("Internet voltou. Sincronizando...");
     salvarBackupOnline(db);
+            atualizarWidgetNotificacao();
 });
         
     </script>
