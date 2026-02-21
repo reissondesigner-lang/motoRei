@@ -78,7 +78,7 @@
         .blink { animation: blinker 1s linear infinite; }
         @keyframes blinker { 50% { opacity: 0.3; } }
         hr { width:100%; margin: 20px 0; border: 1px solid #1a202c; }
-}
+
 .session-card {
     position: relative;
 }
@@ -311,7 +311,7 @@ const diasRestantes = Math.max(0, INT_OLEO_DIAS - diasPassados);
 
             document.getElementById('dispMedia').innerText = db.mediaSugerida.toFixed(1);
             document.getElementById('dispAutonomia').innerText = `Autonomia: ${(db.litrosNoTanque * db.mediaSugerida).toFixed(0)} km`;
-
+            document.getElementById('targetFuel').innerText = db.litrosNoTanque.toFixed(2) + "L";
             document.getElementById('historico').innerHTML = (db.historico || []).slice(0, 3).map(h => `
                 <div class="history-card">
                     <div><p class="label-futuristic" style="margin:0">${new Date(h.data).toLocaleDateString()}</p><p style="color:#fff"><b>${h.km}</b> km</p></div>
